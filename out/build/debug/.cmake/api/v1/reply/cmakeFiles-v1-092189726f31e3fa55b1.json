@@ -1,0 +1,203 @@
+{
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/debug/CMakeFiles/3.30.0/CMakeSystem.cmake"
+		},
+		{
+			"path" : "armgcc.cmake"
+		},
+		{
+			"path" : "mcux_config.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/debug/CMakeFiles/3.30.0/CMakeCCompiler.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/debug/CMakeFiles/3.30.0/CMakeCXXCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Platform/Generic.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Compiler/GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Platform/Generic.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeCXXInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Compiler/GNU-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Platform/Generic.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "out/build/debug/CMakeFiles/3.30.0/CMakeASMCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/CMakeASMInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Compiler/GNU-ASM.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Users/VagnerSilva/.mcuxpressotools/cmake-3.30.0-windows-x86_64/share/cmake-3.30/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"path" : "flags.cmake"
+		},
+		{
+			"path" : "config.cmake"
+		},
+		{
+			"path" : "all_lib_device.cmake"
+		},
+		{
+			"path" : "CMSIS/CMSIS_Include_core_cm.cmake"
+		},
+		{
+			"path" : "component/uart/component_lpuart_adapter.K32L2A41A.cmake"
+		},
+		{
+			"path" : "device/device_CMSIS.K32L2A41A.cmake"
+		},
+		{
+			"path" : "startup/device_startup.K32L2A41A.cmake"
+		},
+		{
+			"path" : "device/device_system.K32L2A41A.cmake"
+		},
+		{
+			"path" : "drivers/driver_clock.K32L2A41A.cmake"
+		},
+		{
+			"path" : "drivers/driver_common.K32L2A41A.cmake"
+		},
+		{
+			"path" : "drivers/driver_gpio.K32L2A41A.cmake"
+		},
+		{
+			"path" : "drivers/driver_lpi2c.K32L2A41A.cmake"
+		},
+		{
+			"path" : "drivers/driver_lpuart.K32L2A41A.cmake"
+		},
+		{
+			"path" : "drivers/driver_port.K32L2A41A.cmake"
+		},
+		{
+			"path" : "drivers/driver_smc.K32L2A41A.cmake"
+		},
+		{
+			"path" : "utilities/utilities_misc_utilities.K32L2A41A.cmake"
+		},
+		{
+			"path" : "utilities/utility_assert_lite.K32L2A41A.cmake"
+		},
+		{
+			"path" : "utilities/utility_debug_console_lite.K32L2A41A.cmake"
+		},
+		{
+			"path" : "utilities/utility_str.K32L2A41A.cmake"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "C:/NXP/projetos/Uart_I2c/lpi2c_polling_b2b_slave/out/build/debug",
+		"source" : "C:/NXP/projetos/Uart_I2c/lpi2c_polling_b2b_slave"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 1
+	}
+}
