@@ -60,6 +60,7 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/Ssd1306/Inc/ssd1306_conf.h"
 )
 
+
 target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 ${ProjDirPath}/source
 ${ProjDirPath}/board
