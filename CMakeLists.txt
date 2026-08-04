@@ -48,6 +48,7 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/board/clock_config.h"
 "${ProjDirPath}/board/hardware_init.c"
 "${ProjDirPath}/board/peripherals.c"
+"${ProjDirPath}/board/peripherals.h"
 "${ProjDirPath}/board/pin_mux.c"
 "${ProjDirPath}/board/pin_mux.h"
 "${ProjDirPath}/source/main.c"
@@ -58,15 +59,30 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/Ssd1306/Src/ssd1306_fonts.c"
 "${ProjDirPath}/Ssd1306/Inc/ssd1306_fonts.h"
 "${ProjDirPath}/Ssd1306/Inc/ssd1306_conf.h"
+"${ProjDirPath}/source/generated/usb_device_config.h"
+"${ProjDirPath}/source/generated/usb_device_composite.c"
+"${ProjDirPath}/source/generated/usb_device_composite.h"
+"${ProjDirPath}/source/generated/usb_device_descriptor.c"
+"${ProjDirPath}/source/generated/usb_device_descriptor.h"
+"${ProjDirPath}/source/usb_device_interface_0_cic_vcom.c"
+"${ProjDirPath}/source/usb_device_interface_0_cic_vcom.h"
+"${ProjDirPath}/source/fsl_os_abstraction_config.h"
+
 )
 
 
 target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
-${ProjDirPath}/source
-${ProjDirPath}/board
-${ProjDirPath}/Ssd1306/Inc
+"${ProjDirPath}/.."
+"${ProjDirPath}/source"
+"${ProjDirPath}/board"
+"${ProjDirPath}/Ssd1306/Inc"
+"${ProjDirPath}/source/generated"
+"${ProjDirPath}/component/lists"
+"${ProjDirPath}/component/osa"
 )
 
+set_source_files_properties("${ProjDirPath}/source/fsl_os_abstraction_config.h" PROPERTIES COMPONENT_CONFIG_FILE "component_osa_template_config")
+set_source_files_properties("${ProjDirPath}/source/generated/usb_device_config.h" PROPERTIES COMPONENT_CONFIG_FILE "middleware_usb_device_khci_config_header")
 
 include(${ProjDirPath}/all_lib_device.cmake)
 

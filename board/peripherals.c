@@ -62,6 +62,29 @@ component:
  * BOARD_InitPeripherals functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
+ * MPU initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'MPU'
+- type: 'mpu_utility'
+- mode: 'MPU'
+- custom_name_enabled: 'false'
+- type_id: 'mpu_utility'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'MPU'
+- config_sets:
+  - mpu_init:
+    - mpuInit: 'custom_init'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+
+/* Empty initialization function (commented out)
+static void MPU_init(void) {
+} */
+
+/***********************************************************************************************************************
  * NVIC0 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -233,6 +256,91 @@ static void LPUART0_init(void) {
 }
 
 /***********************************************************************************************************************
+ * USB0 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'USB0'
+- type: 'usb'
+- mode: 'device'
+- custom_name_enabled: 'false'
+- type_id: 'usb_2.8.0'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'USB0'
+- config_sets:
+  - deviceSetting:
+    - vendor_id: '0x1FC9'
+    - product_id: '0x0094'
+    - manufacturer_string: 'NXP'
+    - product_string: 'VCOM'
+    - self_powered: 'true'
+    - max_power: '100'
+    - interfaces:
+      - 0:
+        - interface_class: 'kClassCic'
+        - setting_cic:
+          - interface_name: 'CIC VCOM'
+          - subclass: 'kSubclassAcm'
+          - protocol: 'kProtocolNone'
+          - implementation: 'kImplementationCicVcom'
+          - endpoints_settings:
+            - 0:
+              - setting_name: 'Default'
+              - endpoints:
+                - 0:
+                  - direction: 'kIn'
+                  - transfer_type: 'kInterrupt'
+                  - synchronization: 'kNoSynchronization'
+                  - usage: 'kData'
+                  - max_packet_size_fs: 'k16'
+                  - polling_interval_fs: '8'
+                  - bRefresh: '0'
+                  - bSynchAddress: 'NoSynchronization'
+          - data_interface_count: '1'
+          - quick_selection: 'QS_INTERFACE_CIC_VCOM'
+      - 1:
+        - interface_class: 'kClassDic'
+        - setting_dic:
+          - interface_name: 'DIC VCOM'
+          - subclass: 'kSubclassNone'
+          - protocol: 'kProtocolNone'
+          - implementation: 'kImplementationDicVcom'
+          - endpoints_settings:
+            - 0:
+              - setting_name: 'Default'
+              - endpoints:
+                - 0:
+                  - direction: 'kIn'
+                  - transfer_type: 'kBulk'
+                  - synchronization: 'kNoSynchronization'
+                  - usage: 'kData'
+                  - max_packet_size_fs: 'k64'
+                  - polling_interval_fs: '0'
+                  - bRefresh: '0'
+                  - bSynchAddress: 'NoSynchronization'
+                - 1:
+                  - direction: 'kOut'
+                  - transfer_type: 'kBulk'
+                  - synchronization: 'kNoSynchronization'
+                  - usage: 'kData'
+                  - max_packet_size_fs: 'k64'
+                  - polling_interval_fs: '0'
+                  - bRefresh: '0'
+                  - bSynchAddress: 'NoSynchronization'
+          - quick_selection: 'QS_INTERFACE_DIC_VCOM'
+    - quick_selection: 'QS_DEVICE_CDC_VCOM'
+  - commonSettings:
+    - mpu_init:
+      - mpu_init_component: 'MPU'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+
+static void USB0_init(void) {
+  USB_DeviceApplicationInit();
+}
+
+/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
@@ -240,6 +348,7 @@ void BOARD_InitPeripherals(void)
   /* Initialize components */
   LPI2C0_init();
   LPUART0_init();
+  USB0_init();
 }
 
 /***********************************************************************************************************************

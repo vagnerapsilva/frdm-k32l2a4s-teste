@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 ,2021 NXP
+ * Copyright 2026 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -12,6 +12,18 @@
 
 #ifndef _PIN_MUX_H_
 #define _PIN_MUX_H_
+
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+
+/*! @brief Direction type  */
+typedef enum _pin_mux_direction
+{
+    kPIN_MUX_DirectionInput = 0U,        /* Input direction */
+    kPIN_MUX_DirectionOutput = 1U,       /* Output direction */
+    kPIN_MUX_DirectionInputOrOutput = 2U /* Input or output direction */
+} pin_mux_direction_t;
 
 /*!
  * @addtogroup pin_mux
@@ -31,6 +43,67 @@ extern "C" {
  *
  */
 void BOARD_InitBootPins(void);
+
+/*! @name PORTB17 (number 63), J1[4]/U7[24]/D1/UART0_TX/FXIO_D17/UART1_TX_TGTMCU
+  @{ */
+/* Routed pin properties */
+/*!
+ * @brief Peripheral name */
+#define BOARD_INITPINS_DEBUG_UART_TX_PERIPHERAL LPUART0
+/*!
+ * @brief Signal name */
+#define BOARD_INITPINS_DEBUG_UART_TX_SIGNAL TX
+/*!
+ * @brief Routed pin name */
+#define BOARD_INITPINS_DEBUG_UART_TX_PIN_NAME LPUART0_TX
+/*!
+ * @brief Label */
+#define BOARD_INITPINS_DEBUG_UART_TX_LABEL "J1[4]/U7[24]/D1/UART0_TX/FXIO_D17/UART1_TX_TGTMCU"
+/*!
+ * @brief Identifier */
+#define BOARD_INITPINS_DEBUG_UART_TX_NAME "DEBUG_UART_TX"
+
+/* Symbols to be used with PORT driver */
+/*!
+ * @brief PORT peripheral base pointer */
+#define BOARD_INITPINS_DEBUG_UART_TX_PORT PORTB
+/*!
+ * @brief PORT pin number */
+#define BOARD_INITPINS_DEBUG_UART_TX_PIN 17U
+/*!
+ * @brief PORT pin mask */
+#define BOARD_INITPINS_DEBUG_UART_TX_PIN_MASK (1U << 17U)
+/* @} */
+
+/*! @name USB0_DM (number 11), J10[2]/K32L2A_USB_DM
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_USB_DM_PERIPHERAL USB0              /*!<@brief Peripheral name */
+#define BOARD_INITPINS_USB_DM_SIGNAL DM                    /*!<@brief Signal name */
+#define BOARD_INITPINS_USB_DM_PIN_NAME USB0_DM             /*!<@brief Routed pin name */
+#define BOARD_INITPINS_USB_DM_LABEL "J10[2]/K32L2A_USB_DM" /*!<@brief Label */
+#define BOARD_INITPINS_USB_DM_NAME "USB_DM"                /*!<@brief Identifier */
+                                                           /* @} */
+
+/*! @name USB0_DP (number 10), J10[3]/K32L2A_USB_DP
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_USB_DP_PERIPHERAL USB0              /*!<@brief Peripheral name */
+#define BOARD_INITPINS_USB_DP_SIGNAL DP                    /*!<@brief Signal name */
+#define BOARD_INITPINS_USB_DP_PIN_NAME USB0_DP             /*!<@brief Routed pin name */
+#define BOARD_INITPINS_USB_DP_LABEL "J10[3]/K32L2A_USB_DP" /*!<@brief Label */
+#define BOARD_INITPINS_USB_DP_NAME "USB_DP"                /*!<@brief Identifier */
+                                                           /* @} */
+
+/*! @name VREGIN (number 13), P5V_K32L2A
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_VREGIN_PERIPHERAL USB0    /*!<@brief Peripheral name */
+#define BOARD_INITPINS_VREGIN_SIGNAL VREGIN      /*!<@brief Signal name */
+#define BOARD_INITPINS_VREGIN_PIN_NAME VREGIN    /*!<@brief Routed pin name */
+#define BOARD_INITPINS_VREGIN_LABEL "P5V_K32L2A" /*!<@brief Label */
+#define BOARD_INITPINS_VREGIN_NAME "VREGIN"      /*!<@brief Identifier */
+                                                 /* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

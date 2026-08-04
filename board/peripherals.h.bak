@@ -34,6 +34,8 @@ extern "C" {
 #define LPI2C0_PERIPHERAL LPI2C0
 /* Definition of clock source */
 #define LPI2C0_CLOCK_FREQ CLOCK_GetIpFreq(kCLOCK_Lpi2c0)
+/* Transfer buffer size */
+#define LPI2C0_MASTER_BUFFER_SIZE 1
 /* Definition of follower address */
 #define LPI2C0_MASTER_SLAVE_ADDRESS 0
 /* Definition of peripheral ID */
@@ -45,6 +47,9 @@ extern "C" {
  * Global variables
  **********************************************************************************************************************/
 extern const lpi2c_master_config_t LPI2C0_masterConfig;
+extern lpi2c_master_transfer_t LPI2C0_masterTransfer;
+extern uint8_t LPI2C0_masterBuffer[LPI2C0_MASTER_BUFFER_SIZE];
+extern lpi2c_master_handle_t LPI2C0_masterHandle;
 extern const lpuart_config_t LPUART0_config;
 
 /***********************************************************************************************************************

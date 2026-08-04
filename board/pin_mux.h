@@ -13,6 +13,18 @@
 #ifndef _PIN_MUX_H_
 #define _PIN_MUX_H_
 
+/***********************************************************************************************************************
+ * Definitions
+ **********************************************************************************************************************/
+
+/*! @brief Direction type  */
+typedef enum _pin_mux_direction
+{
+    kPIN_MUX_DirectionInput = 0U,        /* Input direction */
+    kPIN_MUX_DirectionOutput = 1U,       /* Output direction */
+    kPIN_MUX_DirectionInputOrOutput = 2U /* Input or output direction */
+} pin_mux_direction_t;
+
 /*!
  * @addtogroup pin_mux
  * @{
@@ -34,12 +46,34 @@ void BOARD_InitBootPins(void);
 
 /*! @name PORTB17 (number 63), J1[4]/U7[24]/D1/UART0_TX/FXIO_D17/UART1_TX_TGTMCU
   @{ */
+/* Routed pin properties */
+/*!
+ * @brief Peripheral name */
+#define BOARD_INITPINS_DEBUG_UART_TX_PERIPHERAL LPUART0
+/*!
+ * @brief Signal name */
+#define BOARD_INITPINS_DEBUG_UART_TX_SIGNAL TX
+/*!
+ * @brief Routed pin name */
+#define BOARD_INITPINS_DEBUG_UART_TX_PIN_NAME LPUART0_TX
+/*!
+ * @brief Label */
+#define BOARD_INITPINS_DEBUG_UART_TX_LABEL "J1[4]/U7[24]/D1/UART0_TX/FXIO_D17/UART1_TX_TGTMCU"
+/*!
+ * @brief Identifier */
+#define BOARD_INITPINS_DEBUG_UART_TX_NAME "DEBUG_UART_TX"
 
 /* Symbols to be used with PORT driver */
-#define BOARD_INITPINS_DEBUG_UART_TX_PORT PORTB                /*!<@brief PORT peripheral base pointer */
-#define BOARD_INITPINS_DEBUG_UART_TX_PIN 17U                   /*!<@brief PORT pin number */
-#define BOARD_INITPINS_DEBUG_UART_TX_PIN_MASK (1U << 17U)      /*!<@brief PORT pin mask */
-                                                               /* @} */
+/*!
+ * @brief PORT peripheral base pointer */
+#define BOARD_INITPINS_DEBUG_UART_TX_PORT PORTB
+/*!
+ * @brief PORT pin number */
+#define BOARD_INITPINS_DEBUG_UART_TX_PIN 17U
+/*!
+ * @brief PORT pin mask */
+#define BOARD_INITPINS_DEBUG_UART_TX_PIN_MASK (1U << 17U)
+/* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

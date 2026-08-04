@@ -20,6 +20,8 @@ package_id: K32L2A41VLL1A
 mcu_data: ksdk2_0
 processor_version: 26.06.10
 board: FRDM-K32L2A4S
+external_user_signals: {}
+global_options: {generateExtendedInformation: 'true', automaticPropertyValueSelection: 'true'}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */

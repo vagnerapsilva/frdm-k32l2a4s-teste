@@ -146,6 +146,7 @@ outputs:
 - {id: FIRCDIV1_CLK.outFreq, value: 48 MHz}
 - {id: FIRCDIV3_CLK.outFreq, value: 48 MHz}
 - {id: LPO_clock.outFreq, value: 1 kHz}
+- {id: PCC0.PCC_USB0_CLK.outFreq, value: 48 MHz}
 - {id: PCC1.PCC_LPI2C0_CLK.outFreq, value: 4 MHz}
 - {id: PCC1.PCC_LPUART0_CLK.outFreq, value: 4 MHz}
 - {id: SIRCDIV3_CLK.outFreq, value: 4 MHz}
@@ -163,6 +164,7 @@ settings:
 - {id: SCG_SOSCCSR_SOSCEN_CFG, value: Enabled}
 - {id: SCG_SOSCCSR_SOSCERCLKEN_CFG, value: Enabled}
 sources:
+- {id: PCC0.USBCLK_EXT.outFreq, value: 48 MHz, enabled: true}
 - {id: SCG.SOSC.outFreq, value: 32.768 kHz}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -242,6 +244,8 @@ void BOARD_BootClockRUN(void)
     } while (curConfig.src != g_sysClkConfig_BOARD_BootClockRUN.src);
     /* Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKRUN_CORE_CLOCK;
+    /* Set PCC USB0 selection */
+    CLOCK_SetIpSrc(kCLOCK_Usbfs0, kCLOCK_IpSrcNoneOrExt);
     /* Set PCC LPI2C0 selection */
     CLOCK_SetIpSrc(kCLOCK_Lpi2c0, kCLOCK_IpSrcSircAsync);
     /* Set PCC LPUART0 selection */

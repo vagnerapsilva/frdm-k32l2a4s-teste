@@ -11,7 +11,9 @@
       "environment": {
         "ARMGCC_DIR": "C:/Users/VagnerSilva/.mcuxpressotools/arm-gnu-toolchain-14.2.rel1-mingw-w64-x86_64-arm-none-eabi",
         "MCUX_VENV_PATH": "C:/Users/VagnerSilva/.mcuxpressotools/.mcux-venv-3.12/Scripts",
-        "PATH": "$env{MCUX_VENV_PATH}${pathListSep}$penv{PATH}"
+        "PATH": "$env{MCUX_VENV_PATH}${pathListSep}$penv{PATH}",
+        "POSTPROCESS_UTILITY": "C:/Users/VagnerSilva/.mcuxpressotools/mcux-fixelf-14.2.2/mcux-fixelf.exe",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       },
       "cacheVariables": {}
     },
@@ -22,7 +24,9 @@
       "environment": {
         "ARMGCC_DIR": "C:/Users/VagnerSilva/.mcuxpressotools/arm-gnu-toolchain-14.2.rel1-mingw-w64-x86_64-arm-none-eabi",
         "MCUX_VENV_PATH": "C:/Users/VagnerSilva/.mcuxpressotools/.mcux-venv-3.12/Scripts",
-        "PATH": "$env{MCUX_VENV_PATH}${pathListSep}$penv{PATH}"
+        "PATH": "$env{MCUX_VENV_PATH}${pathListSep}$penv{PATH}",
+        "POSTPROCESS_UTILITY": "C:/Users/VagnerSilva/.mcuxpressotools/mcux-fixelf-14.2.2/mcux-fixelf.exe",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       },
       "cacheVariables": {}
     }
