@@ -30,7 +30,7 @@ status_t SSD1306_WriteBuffer(uint8_t control_byte, uint8_t* buffer, size_t lengt
   masterXfer.dataSize = length;
   masterXfer.flags = kLPI2C_TransferDefaultFlag;
 
-  return LPI2C_MasterTransferBlocking(LPI2C0_PERIPHERAL, &masterXfer);
+  return LPI2C_MasterTransferBlocking(LPI2C2_PERIPHERAL, &masterXfer);
 }
 
 

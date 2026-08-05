@@ -156,6 +156,7 @@ SET(CMAKE_EXE_LINKER_FLAGS_DEBUG " \
     ${FPU} \
     ${SPECS} \
     -T\"${ProjDirPath}/K32L2A41A/armgcc/K32L2A41xxxxA_flash.ld\" -static \
+    -u _printf_float \
 ")
 SET(CMAKE_EXE_LINKER_FLAGS_RELEASE " \
     ${CMAKE_EXE_LINKER_FLAGS_RELEASE} \

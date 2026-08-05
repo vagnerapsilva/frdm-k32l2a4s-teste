@@ -146,6 +146,7 @@ outputs:
 - {id: FIRCDIV1_CLK.outFreq, value: 48 MHz}
 - {id: FIRCDIV3_CLK.outFreq, value: 48 MHz}
 - {id: LPO_clock.outFreq, value: 1 kHz}
+- {id: PCC0.PCC_LPI2C2_CLK.outFreq, value: 4 MHz}
 - {id: PCC0.PCC_USB0_CLK.outFreq, value: 48 MHz}
 - {id: PCC1.PCC_LPI2C0_CLK.outFreq, value: 4 MHz}
 - {id: PCC1.PCC_LPUART0_CLK.outFreq, value: 4 MHz}
@@ -154,6 +155,7 @@ outputs:
 - {id: Slow_clock.outFreq, value: 24 MHz}
 - {id: System_clock.outFreq, value: 48 MHz}
 settings:
+- {id: PCC0.PCC_LPI2C2_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: PCC1.PCC_LPI2C0_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: PCC1.PCC_LPUART0_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: SCG.FIRCDIV1.scale, value: '1', locked: true}
@@ -244,6 +246,8 @@ void BOARD_BootClockRUN(void)
     } while (curConfig.src != g_sysClkConfig_BOARD_BootClockRUN.src);
     /* Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKRUN_CORE_CLOCK;
+    /* Set PCC LPI2C2 selection */
+    CLOCK_SetIpSrc(kCLOCK_Lpi2c2, kCLOCK_IpSrcSircAsync);
     /* Set PCC USB0 selection */
     CLOCK_SetIpSrc(kCLOCK_Usbfs0, kCLOCK_IpSrcNoneOrExt);
     /* Set PCC LPI2C0 selection */

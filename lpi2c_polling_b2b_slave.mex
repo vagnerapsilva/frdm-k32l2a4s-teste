@@ -57,6 +57,11 @@
                         <data>true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="Peripheral" resourceId="LPI2C2" description="Peripheral LPI2C2 signals are routed in the Pins Tool, but the peripheral is not initialized in the Peripherals Tool." problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="Peripheral" resourceId="LPI2C0" description="Peripheral LPI2C0 signals are routed in the Pins Tool, but the peripheral is not initialized in the Peripherals Tool." problem_level="1" source="Pins:BOARD_InitPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
@@ -75,18 +80,64 @@
                </dependencies>
                <pins>
                   <pin peripheral="LPUART0" signal="TX" pin_num="63" pin_signal="TSI0_CH10/PTB17/LPSPI1_SIN/LPUART0_TX/TPM1_CLKIN/LPSPI2_PCS2/FXIO0_D17"/>
-                  <pin peripheral="LPI2C0" signal="SCL" pin_num="55" pin_signal="ADC0_SE12/TSI0_CH7/PTB2/LPI2C0_SCL/TPM2_CH0/LPUART0_RTS_b/FXIO0_D10">
+                  <pin peripheral="LPI2C2" signal="SCL" pin_num="42" pin_signal="PTA12/TPM1_CH0/LPI2C2_SCL">
                      <pin_features>
                         <pin_feature name="slew_rate" value="fast"/>
                         <pin_feature name="open_drain" value="disable"/>
+                        <pin_feature name="drive_strength" value="low"/>
+                        <pin_feature name="pull_select" value="up"/>
                         <pin_feature name="pull_enable" value="enable"/>
+                        <pin_feature name="passive_filter" value="disable"/>
                      </pin_features>
                   </pin>
-                  <pin peripheral="LPI2C0" signal="SDA" pin_num="81" pin_signal="CMP0_IN3/PTC9/LPI2C0_SDA/TPM0_CH5/FXIO0_D22">
+                  <pin peripheral="LPI2C2" signal="SDA" pin_num="43" pin_signal="PTA13/LLWU_P4/TPM1_CH1/LPI2C2_SDA">
                      <pin_features>
                         <pin_feature name="slew_rate" value="fast"/>
                         <pin_feature name="open_drain" value="disable"/>
+                        <pin_feature name="drive_strength" value="low"/>
+                        <pin_feature name="pull_select" value="up"/>
                         <pin_feature name="pull_enable" value="enable"/>
+                        <pin_feature name="passive_filter" value="disable"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPI2C0" signal="SCL" pin_num="31" pin_signal="ADC0_SE20/PTE24/EMVSIM0_IO/TPM0_CH0/LPI2C0_SCL">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="fast"/>
+                        <pin_feature name="open_drain" value="disable"/>
+                        <pin_feature name="drive_strength" value="low"/>
+                        <pin_feature name="pull_select" value="up"/>
+                        <pin_feature name="pull_enable" value="enable"/>
+                        <pin_feature name="passive_filter" value="disable"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="LPI2C0" signal="SDA" pin_num="32" pin_signal="ADC0_SE21/PTE25/LLWU_P21/EMVSIM0_PD/TPM0_CH1/LPI2C0_SDA">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="fast"/>
+                        <pin_feature name="open_drain" value="disable"/>
+                        <pin_feature name="drive_strength" value="low"/>
+                        <pin_feature name="pull_select" value="up"/>
+                        <pin_feature name="pull_enable" value="enable"/>
+                        <pin_feature name="passive_filter" value="disable"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIOE" signal="GPIO, 0" pin_num="1" pin_signal="ADC0_SE16/PTE0/RTC_CLKOUT/LPSPI1_SIN/LPUART1_TX/CMP0_OUT/LPI2C1_SDA">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="slow"/>
+                        <pin_feature name="open_drain" value="disable"/>
+                        <pin_feature name="drive_strength" value="low"/>
+                        <pin_feature name="pull_select" value="up"/>
+                        <pin_feature name="pull_enable" value="disable"/>
+                        <pin_feature name="passive_filter" value="disable"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIOE" signal="GPIO, 1" pin_num="2" pin_signal="ADC0_SE17/PTE1/LLWU_P0/LPSPI1_SOUT/LPUART1_RX/LPI2C1_SCL">
+                     <pin_features>
+                        <pin_feature name="slew_rate" value="slow"/>
+                        <pin_feature name="open_drain" value="disable"/>
+                        <pin_feature name="drive_strength" value="low"/>
+                        <pin_feature name="pull_select" value="up"/>
+                        <pin_feature name="pull_enable" value="disable"/>
+                        <pin_feature name="passive_filter" value="disable"/>
                      </pin_features>
                   </pin>
                </pins>
@@ -126,6 +177,7 @@
                   <clock_output id="FIRCDIV1_CLK.outFreq" value="48 MHz" locked="false" accuracy=""/>
                   <clock_output id="FIRCDIV3_CLK.outFreq" value="48 MHz" locked="false" accuracy=""/>
                   <clock_output id="LPO_clock.outFreq" value="1 kHz" locked="false" accuracy=""/>
+                  <clock_output id="PCC0.PCC_LPI2C2_CLK.outFreq" value="4 MHz" locked="false" accuracy=""/>
                   <clock_output id="PCC0.PCC_USB0_CLK.outFreq" value="48 MHz" locked="false" accuracy=""/>
                   <clock_output id="PCC1.PCC_LPI2C0_CLK.outFreq" value="4 MHz" locked="false" accuracy=""/>
                   <clock_output id="PCC1.PCC_LPUART0_CLK.outFreq" value="4 MHz" locked="false" accuracy=""/>
@@ -135,6 +187,7 @@
                   <clock_output id="System_clock.outFreq" value="48 MHz" locked="false" accuracy=""/>
                </clock_outputs>
                <clock_settings>
+                  <setting id="PCC0.PCC_LPI2C2_SEL.sel" value="SCG.SIRCDIV3_CLK" locked="false"/>
                   <setting id="PCC1.PCC_LPI2C0_SEL.sel" value="SCG.SIRCDIV3_CLK" locked="false"/>
                   <setting id="PCC1.PCC_LPUART0_SEL.sel" value="SCG.SIRCDIV3_CLK" locked="false"/>
                   <setting id="SCG.FIRCDIV1.scale" value="1" locked="true"/>
@@ -378,12 +431,40 @@
                         <data type="Boolean">true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="ClockOutput" resourceId="PCC0.PCC_LPI2C2_CLK" description="LPI2C2 clock is inactive." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="frequency" evaluation="greaterThan">
+                        <data type="Frequency" unit="Hz">0</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPI2C2.lpi2c_scl" description="Signal serial clock is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPI2C2.lpi2c_sda" description="Signal serial data is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
+                     <feature name="routed" evaluation="">
+                        <data type="Boolean">true</data>
+                     </feature>
+                  </dependency>
                </dependencies>
                <instances>
                   <instance name="NVIC0" uuid="fde8b9ca-44ee-4f92-b495-0b23d66035d2" type="nvic" type_id="nvic" mode="general" peripheral="NVIC0" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="nvic">
-                        <array name="interrupt_table"/>
-                        <array name="interrupts"/>
+                        <array name="interrupt_table">
+                           <struct name="0"/>
+                        </array>
+                        <array name="interrupts">
+                           <struct name="0">
+                              <setting name="channelId" value="int_0"/>
+                              <struct name="interrupt_t">
+                                 <setting name="IRQn" value="SysTick_IRQn"/>
+                                 <setting name="enable_interrrupt" value="enabled"/>
+                                 <setting name="enable_priority" value="false"/>
+                                 <setting name="priority" value="0"/>
+                                 <setting name="enable_custom_name" value="false"/>
+                              </struct>
+                           </struct>
+                        </array>
                      </config_set>
                   </instance>
                   <instance name="LPI2C0" uuid="9207ca65-49bb-4c05-8938-f17e661a3bf8" type="lpi2c" type_id="lpi2c_2.2.0" mode="master" peripheral="LPI2C0" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
@@ -400,7 +481,7 @@
                            <setting name="debugEnable" value="false"/>
                            <setting name="ignoreAck" value="false"/>
                            <setting name="pinConfig" value="kLPI2C_2PinOpenDrain"/>
-                           <setting name="baudRate_Hz" value="40000"/>
+                           <setting name="baudRate_Hz" value="100000"/>
                            <setting name="busIdleTimeout_ns" value="0"/>
                            <setting name="pinLowTimeout_ns" value="0"/>
                            <setting name="sdaGlitchFilterWidth_ns" value="0"/>
@@ -467,7 +548,7 @@
                      </config_set>
                   </instance>
                   <instance name="USB0" uuid="c37217ed-7571-483c-a35f-c80258aa6518" type="usb" type_id="usb_2.8.0" mode="device" peripheral="USB0" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
-                     <config_set name="deviceSetting" quick_selection="QS_DEVICE_CDC_VCOM">
+                     <config_set name="deviceSetting">
                         <setting name="vendor_id" value="0x1FC9"/>
                         <setting name="product_id" value="0x0094"/>
                         <setting name="manufacturer_string" value="NXP"/>
@@ -543,6 +624,54 @@
                      <config_set name="commonSettings">
                         <struct name="mpu_init">
                            <setting name="mpu_init_component" value="MPU"/>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="LPI2C2" uuid="a8bfc3f1-fbfe-4775-a791-c85b034172fd" type="lpi2c" type_id="lpi2c_2.2.0" mode="master" peripheral="LPI2C2" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                     <config_set name="main">
+                        <setting name="clockSource" value="Lpi2cClock"/>
+                        <setting name="clockSourceFreq" value="GetIpFreq"/>
+                     </config_set>
+                     <config_set name="interrupt_vector"/>
+                     <config_set name="master">
+                        <setting name="mode" value="transfer"/>
+                        <struct name="config">
+                           <setting name="enableMaster" value="true"/>
+                           <setting name="enableDoze" value="true"/>
+                           <setting name="debugEnable" value="false"/>
+                           <setting name="ignoreAck" value="false"/>
+                           <setting name="pinConfig" value="kLPI2C_2PinOpenDrain"/>
+                           <setting name="baudRate_Hz" value="40000"/>
+                           <setting name="busIdleTimeout_ns" value="0"/>
+                           <setting name="pinLowTimeout_ns" value="0"/>
+                           <setting name="sdaGlitchFilterWidth_ns" value="0"/>
+                           <setting name="sclGlitchFilterWidth_ns" value="0"/>
+                           <struct name="hostRequest">
+                              <setting name="enable" value="false"/>
+                              <setting name="source" value="kLPI2C_HostRequestExternalPin"/>
+                              <setting name="polarity" value="kLPI2C_HostRequestPinActiveHigh"/>
+                           </struct>
+                           <set name="edmaRequestSources">
+                              <selected/>
+                           </set>
+                        </struct>
+                        <struct name="transfer">
+                           <setting name="blocking" value="false"/>
+                           <setting name="enable_custom_handle" value="false"/>
+                           <struct name="callback">
+                              <setting name="name" value=""/>
+                              <setting name="userData" value=""/>
+                           </struct>
+                           <set name="flags">
+                              <selected/>
+                           </set>
+                           <setting name="slaveAddress" value="0"/>
+                           <setting name="direction" value="kLPI2C_Write"/>
+                           <setting name="subaddress" value="0"/>
+                           <setting name="subaddressSize" value="1"/>
+                           <setting name="blocking_buffer" value="false"/>
+                           <setting name="enable_custom_buffer" value="false"/>
+                           <setting name="dataSize" value="1"/>
                         </struct>
                      </config_set>
                   </instance>

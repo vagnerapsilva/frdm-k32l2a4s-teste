@@ -99,8 +99,17 @@ instance:
 - peripheral: 'NVIC0'
 - config_sets:
   - nvic:
-    - interrupt_table: []
-    - interrupts: []
+    - interrupt_table:
+      - 0: []
+    - interrupts:
+      - 0:
+        - channelId: 'int_0'
+        - interrupt_t:
+          - IRQn: 'SysTick_IRQn'
+          - enable_interrrupt: 'enabled'
+          - enable_priority: 'false'
+          - priority: '0'
+          - enable_custom_name: 'false'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
@@ -134,7 +143,7 @@ instance:
       - debugEnable: 'false'
       - ignoreAck: 'false'
       - pinConfig: 'kLPI2C_2PinOpenDrain'
-      - baudRate_Hz: '40000'
+      - baudRate_Hz: '100000'
       - busIdleTimeout_ns: '0'
       - pinLowTimeout_ns: '0'
       - sdaGlitchFilterWidth_ns: '0'
@@ -166,7 +175,7 @@ const lpi2c_master_config_t LPI2C0_masterConfig = {
   .debugEnable = false,
   .ignoreAck = false,
   .pinConfig = kLPI2C_2PinOpenDrain,
-  .baudRate_Hz = 40000UL,
+  .baudRate_Hz = 100000UL,
   .busIdleTimeout_ns = 0UL,
   .pinLowTimeout_ns = 0UL,
   .sdaGlitchFilterWidth_ns = 0U,
@@ -256,6 +265,92 @@ static void LPUART0_init(void) {
 }
 
 /***********************************************************************************************************************
+ * LPI2C2 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'LPI2C2'
+- type: 'lpi2c'
+- mode: 'master'
+- custom_name_enabled: 'false'
+- type_id: 'lpi2c_2.2.0'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'LPI2C2'
+- config_sets:
+  - main:
+    - clockSource: 'Lpi2cClock'
+    - clockSourceFreq: 'GetIpFreq'
+  - interrupt_vector: []
+  - master:
+    - mode: 'transfer'
+    - config:
+      - enableMaster: 'true'
+      - enableDoze: 'true'
+      - debugEnable: 'false'
+      - ignoreAck: 'false'
+      - pinConfig: 'kLPI2C_2PinOpenDrain'
+      - baudRate_Hz: '40000'
+      - busIdleTimeout_ns: '0'
+      - pinLowTimeout_ns: '0'
+      - sdaGlitchFilterWidth_ns: '0'
+      - sclGlitchFilterWidth_ns: '0'
+      - hostRequest:
+        - enable: 'false'
+        - source: 'kLPI2C_HostRequestExternalPin'
+        - polarity: 'kLPI2C_HostRequestPinActiveHigh'
+      - edmaRequestSources: ''
+    - transfer:
+      - blocking: 'false'
+      - enable_custom_handle: 'false'
+      - callback:
+        - name: ''
+        - userData: ''
+      - flags: ''
+      - slaveAddress: '0'
+      - direction: 'kLPI2C_Write'
+      - subaddress: '0'
+      - subaddressSize: '1'
+      - blocking_buffer: 'false'
+      - enable_custom_buffer: 'false'
+      - dataSize: '1'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const lpi2c_master_config_t LPI2C2_masterConfig = {
+  .enableMaster = true,
+  .enableDoze = true,
+  .debugEnable = false,
+  .ignoreAck = false,
+  .pinConfig = kLPI2C_2PinOpenDrain,
+  .baudRate_Hz = 40000UL,
+  .busIdleTimeout_ns = 0UL,
+  .pinLowTimeout_ns = 0UL,
+  .sdaGlitchFilterWidth_ns = 0U,
+  .sclGlitchFilterWidth_ns = 0U,
+  .hostRequest = {
+    .enable = false,
+    .source = kLPI2C_HostRequestExternalPin,
+    .polarity = kLPI2C_HostRequestPinActiveHigh
+  }
+};
+lpi2c_master_transfer_t LPI2C2_masterTransfer = {
+  .flags = kLPI2C_TransferDefaultFlag,
+  .slaveAddress = 0,
+  .direction = kLPI2C_Write,
+  .subaddress = 0,
+  .subaddressSize = 1,
+  .data = LPI2C2_masterBuffer,
+  .dataSize = 1
+};
+lpi2c_master_handle_t LPI2C2_masterHandle;
+uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
+
+static void LPI2C2_init(void) {
+  LPI2C_MasterInit(LPI2C2_PERIPHERAL, &LPI2C2_masterConfig, LPI2C2_CLOCK_FREQ);
+  LPI2C_MasterTransferCreateHandle(LPI2C2_PERIPHERAL, &LPI2C2_masterHandle, NULL, NULL);
+}
+
+/***********************************************************************************************************************
  * USB0 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -329,7 +424,6 @@ instance:
                   - bRefresh: '0'
                   - bSynchAddress: 'NoSynchronization'
           - quick_selection: 'QS_INTERFACE_DIC_VCOM'
-    - quick_selection: 'QS_DEVICE_CDC_VCOM'
   - commonSettings:
     - mpu_init:
       - mpu_init_component: 'MPU'
@@ -343,12 +437,21 @@ static void USB0_init(void) {
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
+static void BOARD_InitPeripherals_CommonPostInit(void)
+{
+  /* Enable interrupt INT_0_IRQN request in the NVIC */
+  EnableIRQ(INT_0_IRQN);
+}
+
 void BOARD_InitPeripherals(void)
 {
   /* Initialize components */
   LPI2C0_init();
   LPUART0_init();
+  LPI2C2_init();
   USB0_init();
+  /* Common post-initialization */
+  BOARD_InitPeripherals_CommonPostInit();
 }
 
 /***********************************************************************************************************************

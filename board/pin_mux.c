@@ -48,9 +48,18 @@ BOARD_InitPins:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
 - pin_list:
   - {pin_num: '63', peripheral: LPUART0, signal: TX, pin_signal: TSI0_CH10/PTB17/LPSPI1_SIN/LPUART0_TX/TPM1_CLKIN/LPSPI2_PCS2/FXIO0_D17}
-  - {pin_num: '55', peripheral: LPI2C0, signal: SCL, pin_signal: ADC0_SE12/TSI0_CH7/PTB2/LPI2C0_SCL/TPM2_CH0/LPUART0_RTS_b/FXIO0_D10, slew_rate: fast, open_drain: disable,
-    pull_enable: enable}
-  - {pin_num: '81', peripheral: LPI2C0, signal: SDA, pin_signal: CMP0_IN3/PTC9/LPI2C0_SDA/TPM0_CH5/FXIO0_D22, slew_rate: fast, open_drain: disable, pull_enable: enable}
+  - {pin_num: '42', peripheral: LPI2C2, signal: SCL, pin_signal: PTA12/TPM1_CH0/LPI2C2_SCL, slew_rate: fast, open_drain: disable, drive_strength: low, pull_select: up,
+    pull_enable: enable, passive_filter: disable}
+  - {pin_num: '43', peripheral: LPI2C2, signal: SDA, pin_signal: PTA13/LLWU_P4/TPM1_CH1/LPI2C2_SDA, slew_rate: fast, open_drain: disable, drive_strength: low, pull_select: up,
+    pull_enable: enable, passive_filter: disable}
+  - {pin_num: '31', peripheral: LPI2C0, signal: SCL, pin_signal: ADC0_SE20/PTE24/EMVSIM0_IO/TPM0_CH0/LPI2C0_SCL, slew_rate: fast, open_drain: disable, drive_strength: low,
+    pull_select: up, pull_enable: enable, passive_filter: disable}
+  - {pin_num: '32', peripheral: LPI2C0, signal: SDA, pin_signal: ADC0_SE21/PTE25/LLWU_P21/EMVSIM0_PD/TPM0_CH1/LPI2C0_SDA, slew_rate: fast, open_drain: disable, drive_strength: low,
+    pull_select: up, pull_enable: enable, passive_filter: disable}
+  - {pin_num: '1', peripheral: GPIOE, signal: 'GPIO, 0', pin_signal: ADC0_SE16/PTE0/RTC_CLKOUT/LPSPI1_SIN/LPUART1_TX/CMP0_OUT/LPI2C1_SDA, slew_rate: slow, open_drain: disable,
+    drive_strength: low, pull_select: up, pull_enable: disable, passive_filter: disable}
+  - {pin_num: '2', peripheral: GPIOE, signal: 'GPIO, 1', pin_signal: ADC0_SE17/PTE1/LLWU_P0/LPSPI1_SOUT/LPUART1_RX/LPI2C1_SCL, slew_rate: slow, open_drain: disable,
+    drive_strength: low, pull_select: up, pull_enable: disable, passive_filter: disable}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -64,46 +73,126 @@ BOARD_InitPins:
 void BOARD_InitPins(void)
 {
     /* Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortA);
+    /* Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortB);
     /* Clock Gate Control: Clock enabled */
-    CLOCK_EnableClock(kCLOCK_PortC);
+    CLOCK_EnableClock(kCLOCK_PortE);
+
+    const port_pin_config_t porta12_pin42_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Open drain is disabled */
+                                                    kPORT_OpenDrainDisable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Pin is configured as LPI2C2_SCL */
+                                                    kPORT_MuxAlt5,
+                                                    /* Pin Control Register fields [15:0] are not locked */
+                                                    kPORT_UnlockRegister};
+    /* PORTA12 (pin 42) is configured as LPI2C2_SCL */
+    PORT_SetPinConfig(PORTA, 12U, &porta12_pin42_config);
+
+    const port_pin_config_t porta13_pin43_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Open drain is disabled */
+                                                    kPORT_OpenDrainDisable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Pin is configured as LPI2C2_SDA */
+                                                    kPORT_MuxAlt5,
+                                                    /* Pin Control Register fields [15:0] are not locked */
+                                                    kPORT_UnlockRegister};
+    /* PORTA13 (pin 43) is configured as LPI2C2_SDA */
+    PORT_SetPinConfig(PORTA, 13U, &porta13_pin43_config);
 
     /* PORTB17 (pin 63) is configured as LPUART0_TX */
     PORT_SetPinMux(BOARD_INITPINS_DEBUG_UART_TX_PORT, BOARD_INITPINS_DEBUG_UART_TX_PIN, kPORT_MuxAlt3);
 
-    /* PORTB2 (pin 55) is configured as LPI2C0_SCL */
-    PORT_SetPinMux(PORTB, 2U, kPORT_MuxAlt2);
+    /* PORTE0 (pin 1) is configured as PTE0 */
+    PORT_SetPinMux(BOARD_INITPINS_GYRO_INT1_PORT, BOARD_INITPINS_GYRO_INT1_PIN, kPORT_MuxAsGpio);
 
-    PORTB->PCR[2] = ((PORTB->PCR[2] &
-                      /* Mask bits to zero which are setting */
-                      (~(PORT_PCR_PE_MASK | PORT_PCR_SRE_MASK | PORT_PCR_ODE_MASK | PORT_PCR_ISF_MASK)))
+    PORTE->PCR[0] =
+        ((PORTE->PCR[0] &
+          /* Mask bits to zero which are setting */
+          (~(PORT_PCR_PS_MASK | PORT_PCR_PE_MASK | PORT_PCR_SRE_MASK | PORT_PCR_ODE_MASK | PORT_PCR_ISF_MASK)))
 
-                     /* Pull Enable: Internal pullup or pulldown resistor is enabled on the corresponding pin. */
-                     | (uint32_t)(PORT_PCR_PE_MASK)
+         /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding PE
+          * field is set. */
+         | PORT_PCR_PS(kPORT_PullUp)
 
-                     /* Slew Rate Enable: Fast slew rate is configured on the corresponding pin, if the pin is
-                      * configured as a digital output. */
-                     | PORT_PCR_SRE(kPORT_FastSlewRate)
+         /* Pull Enable: Internal pullup or pulldown resistor is not enabled on the corresponding pin. */
+         | PORT_PCR_PE(kPORT_PullDisable)
 
-                     /* Open Drain Enable: Open drain output is disabled on the corresponding pin. */
-                     | PORT_PCR_ODE(kPORT_OpenDrainDisable));
+         /* Slew Rate Enable: Slow slew rate is configured on the corresponding pin, if the pin is configured as
+          * a digital output. */
+         | PORT_PCR_SRE(kPORT_SlowSlewRate)
 
-    /* PORTC9 (pin 81) is configured as LPI2C0_SDA */
-    PORT_SetPinMux(PORTC, 9U, kPORT_MuxAlt2);
+         /* Open Drain Enable: Open drain output is disabled on the corresponding pin. */
+         | PORT_PCR_ODE(kPORT_OpenDrainDisable));
 
-    PORTC->PCR[9] = ((PORTC->PCR[9] &
-                      /* Mask bits to zero which are setting */
-                      (~(PORT_PCR_PE_MASK | PORT_PCR_SRE_MASK | PORT_PCR_ODE_MASK | PORT_PCR_ISF_MASK)))
+    /* PORTE1 (pin 2) is configured as PTE1 */
+    PORT_SetPinMux(BOARD_INITPINS_GYRO_INT2_PORT, BOARD_INITPINS_GYRO_INT2_PIN, kPORT_MuxAsGpio);
 
-                     /* Pull Enable: Internal pullup or pulldown resistor is enabled on the corresponding pin. */
-                     | (uint32_t)(PORT_PCR_PE_MASK)
+    PORTE->PCR[1] =
+        ((PORTE->PCR[1] &
+          /* Mask bits to zero which are setting */
+          (~(PORT_PCR_PS_MASK | PORT_PCR_PE_MASK | PORT_PCR_SRE_MASK | PORT_PCR_ODE_MASK | PORT_PCR_ISF_MASK)))
 
-                     /* Slew Rate Enable: Fast slew rate is configured on the corresponding pin, if the pin is
-                      * configured as a digital output. */
-                     | PORT_PCR_SRE(kPORT_FastSlewRate)
+         /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding PE
+          * field is set. */
+         | PORT_PCR_PS(kPORT_PullUp)
 
-                     /* Open Drain Enable: Open drain output is disabled on the corresponding pin. */
-                     | PORT_PCR_ODE(kPORT_OpenDrainDisable));
+         /* Pull Enable: Internal pullup or pulldown resistor is not enabled on the corresponding pin. */
+         | PORT_PCR_PE(kPORT_PullDisable)
+
+         /* Slew Rate Enable: Slow slew rate is configured on the corresponding pin, if the pin is configured as
+          * a digital output. */
+         | PORT_PCR_SRE(kPORT_SlowSlewRate)
+
+         /* Open Drain Enable: Open drain output is disabled on the corresponding pin. */
+         | PORT_PCR_ODE(kPORT_OpenDrainDisable));
+
+    const port_pin_config_t porte24_pin31_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Open drain is disabled */
+                                                    kPORT_OpenDrainDisable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Pin is configured as LPI2C0_SCL */
+                                                    kPORT_MuxAlt5,
+                                                    /* Pin Control Register fields [15:0] are not locked */
+                                                    kPORT_UnlockRegister};
+    /* PORTE24 (pin 31) is configured as LPI2C0_SCL */
+    PORT_SetPinConfig(PORTE, 24U, &porte24_pin31_config);
+
+    const port_pin_config_t porte25_pin32_config = {/* Internal pull-up resistor is enabled */
+                                                    kPORT_PullUp,
+                                                    /* Fast slew rate is configured */
+                                                    kPORT_FastSlewRate,
+                                                    /* Passive filter is disabled */
+                                                    kPORT_PassiveFilterDisable,
+                                                    /* Open drain is disabled */
+                                                    kPORT_OpenDrainDisable,
+                                                    /* Low drive strength is configured */
+                                                    kPORT_LowDriveStrength,
+                                                    /* Pin is configured as LPI2C0_SDA */
+                                                    kPORT_MuxAlt5,
+                                                    /* Pin Control Register fields [15:0] are not locked */
+                                                    kPORT_UnlockRegister};
+    /* PORTE25 (pin 32) is configured as LPI2C0_SDA */
+    PORT_SetPinConfig(PORTE, 25U, &porte25_pin32_config);
 }
 /***********************************************************************************************************************
  * EOF

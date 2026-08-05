@@ -1,7 +1,7 @@
 # config to select component, the format is CONFIG_USE_${component}
 # Please refer to cmake files below to get available components:
 #  ${SdkRootDirPath}/devices/K32L2A41A/all_lib_device.cmake
-
+set(CONFIG_USE_driver_fxas21002cq true)
 set(CONFIG_COMPILER gcc)
 set(CONFIG_TOOLCHAIN armgcc)
 set(CONFIG_USE_COMPONENT_CONFIGURATION false)

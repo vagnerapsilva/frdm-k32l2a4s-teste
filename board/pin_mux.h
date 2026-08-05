@@ -75,6 +75,48 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_DEBUG_UART_TX_PIN_MASK (1U << 17U)
 /* @} */
 
+/*! @name PORTE0 (number 1), U2[3]/INT1_21002
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_GYRO_INT1_PERIPHERAL GPIOE         /*!<@brief Peripheral name */
+#define BOARD_INITPINS_GYRO_INT1_SIGNAL GPIO              /*!<@brief Signal name */
+#define BOARD_INITPINS_GYRO_INT1_CHANNEL 0                /*!<@brief Signal channel */
+#define BOARD_INITPINS_GYRO_INT1_PIN_NAME PTE0            /*!<@brief Routed pin name */
+#define BOARD_INITPINS_GYRO_INT1_LABEL "U2[3]/INT1_21002" /*!<@brief Label */
+#define BOARD_INITPINS_GYRO_INT1_NAME "GYRO_INT1"         /*!<@brief Identifier */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_GYRO_INT1_GPIO GPIOE               /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITPINS_GYRO_INT1_GPIO_PIN 0U              /*!<@brief GPIO pin number */
+#define BOARD_INITPINS_GYRO_INT1_GPIO_PIN_MASK (1U << 0U) /*!<@brief GPIO pin mask */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_INITPINS_GYRO_INT1_PORT PORTE               /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_GYRO_INT1_PIN 0U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_GYRO_INT1_PIN_MASK (1U << 0U)      /*!<@brief PORT pin mask */
+                                                          /* @} */
+
+/*! @name PORTE1 (number 2), U2[2]/INT2_21002
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_GYRO_INT2_PERIPHERAL GPIOE         /*!<@brief Peripheral name */
+#define BOARD_INITPINS_GYRO_INT2_SIGNAL GPIO              /*!<@brief Signal name */
+#define BOARD_INITPINS_GYRO_INT2_CHANNEL 1                /*!<@brief Signal channel */
+#define BOARD_INITPINS_GYRO_INT2_PIN_NAME PTE1            /*!<@brief Routed pin name */
+#define BOARD_INITPINS_GYRO_INT2_LABEL "U2[2]/INT2_21002" /*!<@brief Label */
+#define BOARD_INITPINS_GYRO_INT2_NAME "GYRO_INT2"         /*!<@brief Identifier */
+
+/* Symbols to be used with GPIO driver */
+#define BOARD_INITPINS_GYRO_INT2_GPIO GPIOE               /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITPINS_GYRO_INT2_GPIO_PIN 1U              /*!<@brief GPIO pin number */
+#define BOARD_INITPINS_GYRO_INT2_GPIO_PIN_MASK (1U << 1U) /*!<@brief GPIO pin mask */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_INITPINS_GYRO_INT2_PORT PORTE               /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_GYRO_INT2_PIN 1U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_GYRO_INT2_PIN_MASK (1U << 1U)      /*!<@brief PORT pin mask */
+                                                          /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

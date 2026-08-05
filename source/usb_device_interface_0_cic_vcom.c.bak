@@ -37,7 +37,7 @@
 /* Incoming data buffer index */
 #define USB_DIC_VCOM_OUT_ENDPOINT_INDEX (1)
 /* Data packet size for High Speed */
-#define HS_DIC_VCOM_OUT_PACKET_SIZE (0)
+#define HS_DIC_VCOM_OUT_PACKET_SIZE (512)
 /* Data packet size for Full Speed */
 #define FS_DIC_VCOM_OUT_PACKET_SIZE (64)
 

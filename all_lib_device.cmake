@@ -908,7 +908,7 @@ ${CMAKE_CURRENT_LIST_DIR}/startup
 ${CMAKE_CURRENT_LIST_DIR}/usb
 ${CMAKE_CURRENT_LIST_DIR}/utilities
 )
-
+include_if_use(driver_fxas21002cq.K32L2A41A)
 include_if_use(CMSIS_DSP_Include)
 include_if_use(CMSIS_DSP_Source)
 include_if_use(CMSIS_Device_API_OSTick)
@@ -1202,3 +1202,4 @@ include_if_use(utility_incbin.K32L2A41A)
 include_if_use(utility_notifier.K32L2A41A)
 include_if_use(utility_shell.K32L2A41A)
 include_if_use(utility_str.K32L2A41A)
+

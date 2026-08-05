@@ -30,6 +30,10 @@ extern "C" {
  * Definitions
  **********************************************************************************************************************/
 /* Definitions for BOARD_InitPeripherals functional group */
+/* NVIC0 interrupt vector ID (number). */
+#define INT_0_IRQN SysTick_IRQn
+/* NVIC0 interrupt handler identifier. */
+#define INT_0_IRQHANDLER SysTick_Handler
 /* BOARD_InitPeripherals defines for LPI2C0 */
 /* Definition of peripheral ID */
 #define LPI2C0_PERIPHERAL LPI2C0
@@ -43,6 +47,15 @@ extern "C" {
 #define LPUART0_PERIPHERAL LPUART0
 /* Definition of the clock source frequency */
 #define LPUART0_CLOCK_SOURCE 4000000UL
+/* BOARD_InitPeripherals defines for LPI2C2 */
+/* Definition of peripheral ID */
+#define LPI2C2_PERIPHERAL LPI2C2
+/* Definition of clock source */
+#define LPI2C2_CLOCK_FREQ CLOCK_GetIpFreq(kCLOCK_Lpi2c2)
+/* Transfer buffer size */
+#define LPI2C2_MASTER_BUFFER_SIZE 1
+/* Definition of follower address */
+#define LPI2C2_MASTER_SLAVE_ADDRESS 0
 
 /***********************************************************************************************************************
  * Global variables
@@ -52,6 +65,10 @@ extern lpi2c_master_transfer_t LPI2C0_masterTransfer;
 extern uint8_t LPI2C0_masterBuffer[LPI2C0_MASTER_BUFFER_SIZE];
 extern lpi2c_master_handle_t LPI2C0_masterHandle;
 extern const lpuart_config_t LPUART0_config;
+extern const lpi2c_master_config_t LPI2C2_masterConfig;
+extern lpi2c_master_transfer_t LPI2C2_masterTransfer;
+extern uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
+extern lpi2c_master_handle_t LPI2C2_masterHandle;
 
 /***********************************************************************************************************************
  * Initialization functions
