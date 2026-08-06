@@ -20,6 +20,7 @@
 #include "fsl_clock.h"
 #include "fsl_lpi2c.h"
 #include "fsl_lpuart.h"
+#include "fsl_tpm.h"
 #include "usb_device_composite.h"
 
 #if defined(__cplusplus)
@@ -56,6 +57,14 @@ extern "C" {
 #define LPI2C2_MASTER_BUFFER_SIZE 1
 /* Definition of follower address */
 #define LPI2C2_MASTER_SLAVE_ADDRESS 0
+/* Definition of peripheral ID */
+#define TPM0_PERIPHERAL TPM0
+/* Definition of the clock source frequency */
+#define TPM0_CLOCK_SOURCE 4000000UL
+/* TPM0 interrupt vector ID (number). */
+#define TPM0_IRQN TPM0_IRQn
+/* TPM0 interrupt handler identifier. */
+#define TPM0_IRQHANDLER TPM0_IRQHandler
 
 /***********************************************************************************************************************
  * Global variables
@@ -69,6 +78,7 @@ extern const lpi2c_master_config_t LPI2C2_masterConfig;
 extern lpi2c_master_transfer_t LPI2C2_masterTransfer;
 extern uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
 extern lpi2c_master_handle_t LPI2C2_masterHandle;
+extern const tpm_config_t TPM0_config;
 
 /***********************************************************************************************************************
  * Initialization functions

@@ -1,6 +1,7 @@
 # config to select component, the format is CONFIG_USE_${component}
 # Please refer to cmake files below to get available components:
 #  ${SdkRootDirPath}/devices/K32L2A41A/all_lib_device.cmake
+set(CONFIG_USE_driver_lpit.K32L2A41A true)
 set(CONFIG_USE_driver_fxas21002cq true)
 set(CONFIG_COMPILER gcc)
 set(CONFIG_TOOLCHAIN armgcc)
@@ -39,3 +40,4 @@ set(CONFIG_DEVICE_ID K32L2A41xxxxA)
 set(CONFIG_FPU NO_FPU)
 set(CONFIG_DSP NO_DSP)
 set(CONFIG_CORE_ID core0)
+set(CONFIG_USE_driver_tpm true)

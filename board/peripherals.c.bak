@@ -49,6 +49,10 @@ component:
 - type: 'gpio_adapter_common'
 - type_id: 'gpio_adapter_common'
 - global_gpio_adapter_common:
+  - commonSetting:
+    - HAL_GPIO_CONFLICT_CHECK_ENABLE: 'true'
+    - HAL_GPIO_ISR_PRIORITY: '3'
+    - HAL_GpioPreInit: 'true'
   - quick_selection: 'default'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -101,6 +105,7 @@ instance:
   - nvic:
     - interrupt_table:
       - 0: []
+      - 1: []
     - interrupts:
       - 0:
         - channelId: 'int_0'
@@ -143,7 +148,7 @@ instance:
       - debugEnable: 'false'
       - ignoreAck: 'false'
       - pinConfig: 'kLPI2C_2PinOpenDrain'
-      - baudRate_Hz: '40000'
+      - baudRate_Hz: '100000'
       - busIdleTimeout_ns: '0'
       - pinLowTimeout_ns: '0'
       - sdaGlitchFilterWidth_ns: '0'
@@ -290,7 +295,7 @@ instance:
       - debugEnable: 'false'
       - ignoreAck: 'false'
       - pinConfig: 'kLPI2C_2PinOpenDrain'
-      - baudRate_Hz: '40000'
+      - baudRate_Hz: '100000'
       - busIdleTimeout_ns: '0'
       - pinLowTimeout_ns: '0'
       - sdaGlitchFilterWidth_ns: '0'
@@ -322,7 +327,7 @@ const lpi2c_master_config_t LPI2C2_masterConfig = {
   .debugEnable = false,
   .ignoreAck = false,
   .pinConfig = kLPI2C_2PinOpenDrain,
-  .baudRate_Hz = 40000UL,
+  .baudRate_Hz = 100000UL,
   .busIdleTimeout_ns = 0UL,
   .pinLowTimeout_ns = 0UL,
   .sdaGlitchFilterWidth_ns = 0U,
@@ -348,6 +353,146 @@ uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
 static void LPI2C2_init(void) {
   LPI2C_MasterInit(LPI2C2_PERIPHERAL, &LPI2C2_masterConfig, LPI2C2_CLOCK_FREQ);
   LPI2C_MasterTransferCreateHandle(LPI2C2_PERIPHERAL, &LPI2C2_masterHandle, NULL, NULL);
+}
+
+/***********************************************************************************************************************
+ * TPM0 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'TPM0'
+- type: 'tpm'
+- mode: 'EdgeAligned'
+- custom_name_enabled: 'false'
+- type_id: 'tpm_2.0.2'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'TPM0'
+- config_sets:
+  - tpm_main_config:
+    - tpm_config:
+      - clockSource: 'kTPM_SystemClock'
+      - tpmSrcClkFreq: 'ClocksTool_DefaultInit'
+      - prescale: 'kTPM_Prescale_Divide_128'
+      - timerFrequency: '1000'
+      - useGlobalTimeBase: 'false'
+      - triggerSelect: 'kTPM_Trigger_Select_1'
+      - triggerSource: 'kTPM_TriggerSource_Internal'
+      - enableDoze: 'false'
+      - enableDebugMode: 'false'
+      - enableReloadOnTrigger: 'false'
+      - enableStopOnOverflow: 'false'
+      - enableStartOnTrigger: 'false'
+      - enablePauseOnTrigger: 'false'
+    - timer_interrupts: 'kTPM_TimeOverflowInterruptEnable'
+    - enable_irq: 'true'
+    - tpm_interrupt:
+      - IRQn: 'TPM0_IRQn'
+      - enable_interrrupt: 'enabled'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+    - EnableTimerInInit: 'true'
+  - tpm_edge_aligned_mode:
+    - tpm_edge_aligned_channels_config: []
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const tpm_config_t TPM0_config = {
+  .prescale = kTPM_Prescale_Divide_128,
+  .useGlobalTimeBase = false,
+  .triggerSelect = kTPM_Trigger_Select_1,
+  .triggerSource = kTPM_TriggerSource_Internal,
+  .enableDoze = false,
+  .enableDebugMode = false,
+  .enableReloadOnTrigger = false,
+  .enableStopOnOverflow = false,
+  .enableStartOnTrigger = false,
+  .enablePauseOnTrigger = false
+};
+
+static void TPM0_init(void) {
+  TPM_Init(TPM0_PERIPHERAL, &TPM0_config);
+  TPM_SetTimerPeriod(TPM0_PERIPHERAL, ((TPM0_CLOCK_SOURCE/ (1U << (TPM0_PERIPHERAL->SC & TPM_SC_PS_MASK))) / 1000) + 1);
+  TPM_EnableInterrupts(TPM0_PERIPHERAL, kTPM_TimeOverflowInterruptEnable);
+  /* Enable interrupt TPM0_IRQN request in the NVIC */
+  EnableIRQ(TPM0_IRQN);
+  TPM_StartTimer(TPM0_PERIPHERAL, kTPM_SystemClock);
+}
+
+/***********************************************************************************************************************
+ * GPIOA initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'GPIOA'
+- type: 'gpio_adapter'
+- mode: 'GPIO'
+- custom_name_enabled: 'false'
+- type_id: 'gpio_adapter_1.0.1'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'GPIOA'
+- config_sets:
+  - fsl_adapter_gpio:
+    - signalsFilter: 'default boot'
+    - gpioSignalsParameters:
+      - 0: []
+      - 1: []
+      - 2: []
+    - gpioPinsOverView:
+      - 0: []
+      - 1: []
+      - 2: []
+    - gpioPinsConfig: []
+    - globalCfg: []
+    - differentPeripheralsAdd: []
+    - quick_selection: 'QuickSelection1'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+/* Get GPIO pin configuration */
+hal_gpio_pin_config_t createAdapterGpioPinConfig(GPIO_Type *port, uint8_t pin, hal_gpio_direction_t direction, uint8_t level){
+  hal_gpio_pin_config_t temp;
+  /* Array of GPIO peripheral base address. */
+  static GPIO_Type *const s_gpioBases[] = GPIO_BASE_PTRS;
+  uint8_t portInd;
+  /* Find the port index from base address mappings. */
+  for (portInd = 0U; portInd < ARRAY_SIZE(s_gpioBases); portInd++)
+  {    if (s_gpioBases[portInd] == port)
+    {
+      break;
+    }
+  }
+  
+  assert(portInd < ARRAY_SIZE(s_gpioBases));
+  
+  temp.direction = direction;
+  temp.level = level;
+  temp.port = portInd;
+  temp.pin = pin;
+  
+  return temp;
+};
+GPIO_HANDLE_DEFINE(BOARD_INITPINS_DT_PIN_handle);
+GPIO_HANDLE_DEFINE(BOARD_INITPINS_CLK_PIN_handle);
+GPIO_HANDLE_DEFINE(BOARD_INITPINS_SW_PIN_handle);
+
+static void GPIOA_init(void) {
+  /* GPIO adapter initialization */
+  static hal_gpio_pin_config_t gpioPinConfig;
+  hal_gpio_status_t status;
+  (void)status; // suppress warning in the run configuration
+  /* GPIO, 15 signal initialization */
+  gpioPinConfig = createAdapterGpioPinConfig(BOARD_INITPINS_DT_PIN_GPIO, BOARD_INITPINS_DT_PIN_PIN, BOARD_INITPINS_DT_PIN_PIN_DIRECTION, BOARD_INITPINS_DT_PIN_PIN_LEVEL);
+  status = HAL_GpioInit(BOARD_INITPINS_DT_PIN_handle, &gpioPinConfig);
+  assert(status == kStatus_HAL_GpioSuccess);
+  /* GPIO, 16 signal initialization */
+  gpioPinConfig = createAdapterGpioPinConfig(BOARD_INITPINS_CLK_PIN_GPIO, BOARD_INITPINS_CLK_PIN_PIN, BOARD_INITPINS_CLK_PIN_PIN_DIRECTION, BOARD_INITPINS_CLK_PIN_PIN_LEVEL);
+  status = HAL_GpioInit(BOARD_INITPINS_CLK_PIN_handle, &gpioPinConfig);
+  assert(status == kStatus_HAL_GpioSuccess);
+  /* GPIO, 17 signal initialization */
+  gpioPinConfig = createAdapterGpioPinConfig(BOARD_INITPINS_SW_PIN_GPIO, BOARD_INITPINS_SW_PIN_PIN, BOARD_INITPINS_SW_PIN_PIN_DIRECTION, BOARD_INITPINS_SW_PIN_PIN_LEVEL);
+  status = HAL_GpioInit(BOARD_INITPINS_SW_PIN_handle, &gpioPinConfig);
+  assert(status == kStatus_HAL_GpioSuccess);
 }
 
 /***********************************************************************************************************************
@@ -445,10 +590,16 @@ static void BOARD_InitPeripherals_CommonPostInit(void)
 
 void BOARD_InitPeripherals(void)
 {
+  /* Global initialization */
+  /* GPIO adapter pre-initialization */
+  HAL_GpioPreInit();
+
   /* Initialize components */
   LPI2C0_init();
   LPUART0_init();
   LPI2C2_init();
+  TPM0_init();
+  GPIOA_init();
   USB0_init();
   /* Common post-initialization */
   BOARD_InitPeripherals_CommonPostInit();

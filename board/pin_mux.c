@@ -22,12 +22,19 @@ processor_version: 26.06.10
 board: FRDM-K32L2A4S
 external_user_signals: {}
 global_options: {generateExtendedInformation: 'true', automaticPropertyValueSelection: 'true'}
+pin_labels:
+- {pin_num: '45', pin_signal: PTA15/LPSPI0_SCK/LPUART0_RX, label: 'J3[9]', identifier: DT_PIN}
+- {pin_num: '46', pin_signal: PTA16/LPSPI0_SOUT/LPUART0_CTS_b, label: 'J3[11]', identifier: CLK_PIN}
+- {pin_num: '47', pin_signal: ADC0_SE22/PTA17/LPSPI0_SIN/LPUART0_RTS_b, label: 'J3[13]', identifier: SW_PIN}
+- {pin_num: '50', pin_signal: EXTAL0/PTA18/LPUART1_RX/TPM0_CLKIN, label: 'Y1[1]/EXTAL_32KHZ', identifier: EXTAL0;CLK_PIN}
+- {pin_num: '51', pin_signal: XTAL0/PTA19/LPUART1_TX/TPM1_CLKIN/LPTMR0_ALT1/LPTMR1_ALT1, label: 'Y1[2]/XTAL_32KHZ', identifier: XTAL0;DT_PIN}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
 
 #include "fsl_common.h"
 #include "fsl_port.h"
+#include "fsl_gpio.h"
 #include "pin_mux.h"
 
 /* FUNCTION ************************************************************************************************************
@@ -60,6 +67,12 @@ BOARD_InitPins:
     drive_strength: low, pull_select: up, pull_enable: disable, passive_filter: disable}
   - {pin_num: '2', peripheral: GPIOE, signal: 'GPIO, 1', pin_signal: ADC0_SE17/PTE1/LLWU_P0/LPSPI1_SOUT/LPUART1_RX/LPI2C1_SCL, slew_rate: slow, open_drain: disable,
     drive_strength: low, pull_select: up, pull_enable: disable, passive_filter: disable}
+  - {pin_num: '47', peripheral: GPIOA, signal: 'GPIO, 17', pin_signal: ADC0_SE22/PTA17/LPSPI0_SIN/LPUART0_RTS_b, direction: INPUT, gpio_interrupt: kPORT_InterruptOrDMADisabled,
+    slew_rate: slow, open_drain: disable, drive_strength: low, pull_select: up, pull_enable: disable, passive_filter: disable}
+  - {pin_num: '46', peripheral: GPIOA, signal: 'GPIO, 16', pin_signal: PTA16/LPSPI0_SOUT/LPUART0_CTS_b, direction: INPUT, gpio_interrupt: kPORT_FlagFallingEdge, slew_rate: slow,
+    open_drain: disable, drive_strength: low, pull_select: up, pull_enable: disable, passive_filter: disable}
+  - {pin_num: '45', peripheral: GPIOA, signal: 'GPIO, 15', pin_signal: PTA15/LPSPI0_SCK/LPUART0_RX, direction: INPUT, gpio_interrupt: kPORT_FlagFallingEdge, slew_rate: slow,
+    open_drain: disable, drive_strength: low, pull_select: up, pull_enable: disable, passive_filter: disable}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -78,6 +91,27 @@ void BOARD_InitPins(void)
     CLOCK_EnableClock(kCLOCK_PortB);
     /* Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
+
+    gpio_pin_config_t DT_PIN_config = {
+        .pinDirection = kGPIO_DigitalInput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTA15 (pin 45)  */
+    GPIO_PinInit(BOARD_INITPINS_DT_PIN_GPIO, BOARD_INITPINS_DT_PIN_PIN, &DT_PIN_config);
+
+    gpio_pin_config_t CLK_PIN_config = {
+        .pinDirection = kGPIO_DigitalInput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTA16 (pin 46)  */
+    GPIO_PinInit(BOARD_INITPINS_CLK_PIN_GPIO, BOARD_INITPINS_CLK_PIN_PIN, &CLK_PIN_config);
+
+    gpio_pin_config_t SW_PIN_config = {
+        .pinDirection = kGPIO_DigitalInput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTA17 (pin 47)  */
+    GPIO_PinInit(BOARD_INITPINS_SW_PIN_GPIO, BOARD_INITPINS_SW_PIN_PIN, &SW_PIN_config);
 
     const port_pin_config_t porta12_pin42_config = {/* Internal pull-up resistor is enabled */
                                                     kPORT_PullUp,
@@ -112,6 +146,81 @@ void BOARD_InitPins(void)
                                                     kPORT_UnlockRegister};
     /* PORTA13 (pin 43) is configured as LPI2C2_SDA */
     PORT_SetPinConfig(PORTA, 13U, &porta13_pin43_config);
+
+    /* PORTA15 (pin 45) is configured as PTA15 */
+    PORT_SetPinMux(BOARD_INITPINS_DT_PIN_PORT, BOARD_INITPINS_DT_PIN_PIN, kPORT_MuxAsGpio);
+
+    /* Interrupt configuration on PORTA15 (pin 45): Flag sets on falling edge */
+    PORT_SetPinInterruptConfig(BOARD_INITPINS_DT_PIN_PORT, BOARD_INITPINS_DT_PIN_PIN, kPORT_FlagFallingEdge);
+
+    PORTA->PCR[15] =
+        ((PORTA->PCR[15] &
+          /* Mask bits to zero which are setting */
+          (~(PORT_PCR_PS_MASK | PORT_PCR_PE_MASK | PORT_PCR_SRE_MASK | PORT_PCR_ODE_MASK | PORT_PCR_ISF_MASK)))
+
+         /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding PE
+          * field is set. */
+         | PORT_PCR_PS(kPORT_PullUp)
+
+         /* Pull Enable: Internal pullup or pulldown resistor is not enabled on the corresponding pin. */
+         | PORT_PCR_PE(kPORT_PullDisable)
+
+         /* Slew Rate Enable: Slow slew rate is configured on the corresponding pin, if the pin is configured as
+          * a digital output. */
+         | PORT_PCR_SRE(kPORT_SlowSlewRate)
+
+         /* Open Drain Enable: Open drain output is disabled on the corresponding pin. */
+         | PORT_PCR_ODE(kPORT_OpenDrainDisable));
+
+    /* PORTA16 (pin 46) is configured as PTA16 */
+    PORT_SetPinMux(BOARD_INITPINS_CLK_PIN_PORT, BOARD_INITPINS_CLK_PIN_PIN, kPORT_MuxAsGpio);
+
+    /* Interrupt configuration on PORTA16 (pin 46): Flag sets on falling edge */
+    PORT_SetPinInterruptConfig(BOARD_INITPINS_CLK_PIN_PORT, BOARD_INITPINS_CLK_PIN_PIN, kPORT_FlagFallingEdge);
+
+    PORTA->PCR[16] =
+        ((PORTA->PCR[16] &
+          /* Mask bits to zero which are setting */
+          (~(PORT_PCR_PS_MASK | PORT_PCR_PE_MASK | PORT_PCR_SRE_MASK | PORT_PCR_ODE_MASK | PORT_PCR_ISF_MASK)))
+
+         /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding PE
+          * field is set. */
+         | PORT_PCR_PS(kPORT_PullUp)
+
+         /* Pull Enable: Internal pullup or pulldown resistor is not enabled on the corresponding pin. */
+         | PORT_PCR_PE(kPORT_PullDisable)
+
+         /* Slew Rate Enable: Slow slew rate is configured on the corresponding pin, if the pin is configured as
+          * a digital output. */
+         | PORT_PCR_SRE(kPORT_SlowSlewRate)
+
+         /* Open Drain Enable: Open drain output is disabled on the corresponding pin. */
+         | PORT_PCR_ODE(kPORT_OpenDrainDisable));
+
+    /* PORTA17 (pin 47) is configured as PTA17 */
+    PORT_SetPinMux(BOARD_INITPINS_SW_PIN_PORT, BOARD_INITPINS_SW_PIN_PIN, kPORT_MuxAsGpio);
+
+    /* Interrupt configuration on PORTA17 (pin 47): Interrupt/DMA request is disabled */
+    PORT_SetPinInterruptConfig(BOARD_INITPINS_SW_PIN_PORT, BOARD_INITPINS_SW_PIN_PIN, kPORT_InterruptOrDMADisabled);
+
+    PORTA->PCR[17] =
+        ((PORTA->PCR[17] &
+          /* Mask bits to zero which are setting */
+          (~(PORT_PCR_PS_MASK | PORT_PCR_PE_MASK | PORT_PCR_SRE_MASK | PORT_PCR_ODE_MASK | PORT_PCR_ISF_MASK)))
+
+         /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding PE
+          * field is set. */
+         | PORT_PCR_PS(kPORT_PullUp)
+
+         /* Pull Enable: Internal pullup or pulldown resistor is not enabled on the corresponding pin. */
+         | PORT_PCR_PE(kPORT_PullDisable)
+
+         /* Slew Rate Enable: Slow slew rate is configured on the corresponding pin, if the pin is configured as
+          * a digital output. */
+         | PORT_PCR_SRE(kPORT_SlowSlewRate)
+
+         /* Open Drain Enable: Open drain output is disabled on the corresponding pin. */
+         | PORT_PCR_ODE(kPORT_OpenDrainDisable));
 
     /* PORTB17 (pin 63) is configured as LPUART0_TX */
     PORT_SetPinMux(BOARD_INITPINS_DEBUG_UART_TX_PORT, BOARD_INITPINS_DEBUG_UART_TX_PIN, kPORT_MuxAlt3);

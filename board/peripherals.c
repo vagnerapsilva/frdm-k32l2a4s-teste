@@ -101,6 +101,7 @@ instance:
   - nvic:
     - interrupt_table:
       - 0: []
+      - 1: []
     - interrupts:
       - 0:
         - channelId: 'int_0'
@@ -290,7 +291,7 @@ instance:
       - debugEnable: 'false'
       - ignoreAck: 'false'
       - pinConfig: 'kLPI2C_2PinOpenDrain'
-      - baudRate_Hz: '40000'
+      - baudRate_Hz: '100000'
       - busIdleTimeout_ns: '0'
       - pinLowTimeout_ns: '0'
       - sdaGlitchFilterWidth_ns: '0'
@@ -322,7 +323,7 @@ const lpi2c_master_config_t LPI2C2_masterConfig = {
   .debugEnable = false,
   .ignoreAck = false,
   .pinConfig = kLPI2C_2PinOpenDrain,
-  .baudRate_Hz = 40000UL,
+  .baudRate_Hz = 100000UL,
   .busIdleTimeout_ns = 0UL,
   .pinLowTimeout_ns = 0UL,
   .sdaGlitchFilterWidth_ns = 0U,
@@ -348,6 +349,70 @@ uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
 static void LPI2C2_init(void) {
   LPI2C_MasterInit(LPI2C2_PERIPHERAL, &LPI2C2_masterConfig, LPI2C2_CLOCK_FREQ);
   LPI2C_MasterTransferCreateHandle(LPI2C2_PERIPHERAL, &LPI2C2_masterHandle, NULL, NULL);
+}
+
+/***********************************************************************************************************************
+ * TPM0 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'TPM0'
+- type: 'tpm'
+- mode: 'EdgeAligned'
+- custom_name_enabled: 'false'
+- type_id: 'tpm_2.0.2'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'TPM0'
+- config_sets:
+  - tpm_main_config:
+    - tpm_config:
+      - clockSource: 'kTPM_SystemClock'
+      - tpmSrcClkFreq: 'ClocksTool_DefaultInit'
+      - prescale: 'kTPM_Prescale_Divide_128'
+      - timerFrequency: '1000'
+      - useGlobalTimeBase: 'false'
+      - triggerSelect: 'kTPM_Trigger_Select_1'
+      - triggerSource: 'kTPM_TriggerSource_Internal'
+      - enableDoze: 'false'
+      - enableDebugMode: 'false'
+      - enableReloadOnTrigger: 'false'
+      - enableStopOnOverflow: 'false'
+      - enableStartOnTrigger: 'false'
+      - enablePauseOnTrigger: 'false'
+    - timer_interrupts: 'kTPM_TimeOverflowInterruptEnable'
+    - enable_irq: 'true'
+    - tpm_interrupt:
+      - IRQn: 'TPM0_IRQn'
+      - enable_interrrupt: 'enabled'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+    - EnableTimerInInit: 'true'
+  - tpm_edge_aligned_mode:
+    - tpm_edge_aligned_channels_config: []
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const tpm_config_t TPM0_config = {
+  .prescale = kTPM_Prescale_Divide_128,
+  .useGlobalTimeBase = false,
+  .triggerSelect = kTPM_Trigger_Select_1,
+  .triggerSource = kTPM_TriggerSource_Internal,
+  .enableDoze = false,
+  .enableDebugMode = false,
+  .enableReloadOnTrigger = false,
+  .enableStopOnOverflow = false,
+  .enableStartOnTrigger = false,
+  .enablePauseOnTrigger = false
+};
+
+static void TPM0_init(void) {
+  TPM_Init(TPM0_PERIPHERAL, &TPM0_config);
+  TPM_SetTimerPeriod(TPM0_PERIPHERAL, ((TPM0_CLOCK_SOURCE/ (1U << (TPM0_PERIPHERAL->SC & TPM_SC_PS_MASK))) / 1000) + 1);
+  TPM_EnableInterrupts(TPM0_PERIPHERAL, kTPM_TimeOverflowInterruptEnable);
+  /* Enable interrupt TPM0_IRQN request in the NVIC */
+  EnableIRQ(TPM0_IRQN);
+  TPM_StartTimer(TPM0_PERIPHERAL, kTPM_SystemClock);
 }
 
 /***********************************************************************************************************************
@@ -449,6 +514,7 @@ void BOARD_InitPeripherals(void)
   LPI2C0_init();
   LPUART0_init();
   LPI2C2_init();
+  TPM0_init();
   USB0_init();
   /* Common post-initialization */
   BOARD_InitPeripherals_CommonPostInit();

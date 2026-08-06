@@ -67,7 +67,10 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/source/usb_device_interface_0_cic_vcom.c"
 "${ProjDirPath}/source/usb_device_interface_0_cic_vcom.h"
 "${ProjDirPath}/source/fsl_os_abstraction_config.h"
-
+"${ProjDirPath}/fxas_21002c/src/fxas_21002c.c"
+"${ProjDirPath}/fxas_21002c/inc/fxas_21002c.h"
+"${ProjDirPath}/encoder/src/encoder_ky_040.c"
+"${ProjDirPath}/encoder/inc/encoder_ky_040.h"
 )
 
 
@@ -79,6 +82,9 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/source/generated"
 "${ProjDirPath}/component/lists"
 "${ProjDirPath}/component/osa"
+"${ProjDirPath}/fxas_21002c/inc"
+"${ProjDirPath}/encoder/inc"
+
 )
 
 set_source_files_properties("${ProjDirPath}/source/fsl_os_abstraction_config.h" PROPERTIES COMPONENT_CONFIG_FILE "component_osa_template_config")
