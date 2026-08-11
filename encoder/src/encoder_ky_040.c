@@ -118,12 +118,12 @@ void TPM0_IRQHANDLER(void) {
             else {
                 encoder_counter--;
             }
-            // 3. Mantém o efeito carrossel infinito entre as 3 opções
-            if (encoder_counter >= TOTAL_OPCOES) {
-                encoder_counter = OPCAO_1;
+           // 3. Mantém o efeito carrossel infinito entre as 3 opções
+            if (encoder_counter > 16) {
+                encoder_counter = 0;
             }
             else if (encoder_counter < 0) {
-                encoder_counter = OPCAO_3;
+                encoder_counter = 16;
             }
             print_flag = true; // Sinaliza ao loop principal para imprimir o valor atualizado
         }

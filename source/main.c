@@ -40,7 +40,7 @@
 volatile uint16_t SampleEventFlag;
 uint8_t txbuff[] = "Usart polling example\r\nBoard will send back received characters\r\n";
 uint8_t rxbuff[64] = { 0 };
-
+extern char MSG[50];
 
 
 
@@ -100,29 +100,29 @@ void SysTick_Handler(void)
 
 
 // Renderiza o menu no Terminal Serial
-void Display_Menu(void) {
-    // Limpa a tela do terminal serial simulando um display
+// void Display_Menu(void) {
+//     // Limpa a tela do terminal serial simulando um display
 
-    ssd1306_Fill(Black);
-    memset(MSG, 0xFF, 50);
-    sprintf(MSG, "--MENU DE TESTES--");
-    ssd1306_SetCursor(2, 0);
-    ssd1306_WriteString(MSG, Font_7x10, White);
-    memset(MSG, 0xFF, 50);
-    sprintf(MSG, "%s Usart ", (encoder_counter == OPCAO_1) ? "->[X]" : "  [ ]");
-    ssd1306_SetCursor(2, 12);
-    ssd1306_WriteString(MSG, Font_7x10, White);
-    memset(MSG, 0xFF, 50);
-    sprintf(MSG, "%s Usb ", (encoder_counter == OPCAO_2) ? "->[X]" : "  [ ]");
-    ssd1306_SetCursor(2, 22);
-    ssd1306_WriteString(MSG, Font_7x10, White);
-    memset(MSG, 0xFF, 50);
-    sprintf(MSG, "%s Giroscopio ", (encoder_counter == OPCAO_3) ? "->[X]" : "  [ ]");
-    ssd1306_SetCursor(2, 32);
-    ssd1306_WriteString(MSG, Font_7x10, White);
-    ssd1306_UpdateScreen();
+//     ssd1306_Fill(Black);
+//     memset(MSG, 0xFF, 50);
+//     sprintf(MSG, "--MENU DE TESTES--");
+//     ssd1306_SetCursor(2, 0);
+//     ssd1306_WriteString(MSG, Font_7x10, White);
+//     memset(MSG, 0xFF, 50);
+//     sprintf(MSG, "%s Usart ", (encoder_counter == OPCAO_1) ? "->[X]" : "  [ ]");
+//     ssd1306_SetCursor(2, 12);
+//     ssd1306_WriteString(MSG, Font_7x10, White);
+//     memset(MSG, 0xFF, 50);
+//     sprintf(MSG, "%s Usb ", (encoder_counter == OPCAO_2) ? "->[X]" : "  [ ]");
+//     ssd1306_SetCursor(2, 22);
+//     ssd1306_WriteString(MSG, Font_7x10, White);
+//     memset(MSG, 0xFF, 50);
+//     sprintf(MSG, "%s Giroscopio ", (encoder_counter == OPCAO_3) ? "->[X]" : "  [ ]");
+//     ssd1306_SetCursor(2, 32);
+//     ssd1306_WriteString(MSG, Font_7x10, White);
+//     ssd1306_UpdateScreen();
 
-}
+// }
 
 void teste_Giroscopio(void)
 {
@@ -218,15 +218,127 @@ void Execute_Menu_Option(void) {
     // for (volatile int i = 0; i < 3000000; i++);
     // menu_changed = true; // Força o redesenho do menu após a execução
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+#include <stdbool.h>
+
+// Definições do Display (SSD1306)
+#define NUM_ITEMS 16
+#define VISIBLE_LINES 4
+#define FONT_HEIGHT 10
+
+// Protótipos de funções fictícias da sua biblioteca SSD1306 e GPIO
+// void SSD1306_Clear(void);
+// void SSD1306_GotoXY(uint16_t x, uint16_t y);
+// void SSD1306_Puts(char* str, FontDef_t* Font, uint8_t color);
+// void SSD1306_UpdateScreen(void);
+// bool Encoder_Get_Button_Pressed(void);
+
+// Estrutura para os itens do menu
+typedef struct {
+    char name[20];
+    void (*callback)(void); // Função executada ao clicar no item
+} MenuItem;
+
+// Declaração das funções de ação do menu
+void action_placeholder(void) { /* Código da ação aqui */ }
+
+// Array com os 16 itens do menu
+MenuItem menu[NUM_ITEMS] = {
+    {"Usart one wire", action_placeholder},
+    {"Usb CDC",   action_placeholder},
+    {"Giroscopio",    teste_Giroscopio},
+    {"Acelerometro", action_placeholder},
+    {"Sensor Light", action_placeholder},
+    {"Push Buttons",     action_placeholder},
+    {"Led RGB",     action_placeholder},
+    {"RTC",   action_placeholder},
+    {"Cryptografia",   action_placeholder},
+    {"Protocolo",        action_placeholder},
+    {"Reset Fabrica", action_placeholder},
+    {"Sobre o Disp",  action_placeholder},
+    {"Diagnostico",   action_placeholder},
+    {"Economia Eng",  action_placeholder},
+    {"Contraste",     action_placeholder},
+    {"Close",          action_placeholder}
+};
+
+// Variáveis de controle do Menu
+int16_t current_selection = 0;
+int16_t scroll_offset = 0;
+volatile int32_t last_encoder_counter = 0;
+
+/**
+ * @brief Atualiza e renderiza o menu no display SSD1306
+ */
+void Menu_Display_Update(void) {
+    ssd1306_Fill(Black);
+
+    sprintf(MSG, "LIB FRDM-K32L2A4S");
+    ssd1306_SetCursor(1, 0);
+    ssd1306_WriteString(MSG, Font_7x10, White);
+
+
+    for (int i = 0; i < VISIBLE_LINES; i++) {
+        // Calcula o índice real do item baseado na janela de rolagem
+        int item_index = scroll_offset + i;
+        if (item_index >= NUM_ITEMS) break;
+
+        // Define a posição Y inicial (Ex: linha 0 = 0px, linha 1 = 12px para dar espaçamento)
+        uint16_t y_pos = i * (FONT_HEIGHT + 1);
+
+        ssd1306_SetCursor(0, (y_pos+15));
+
+        // Se for o item selecionado, adiciona um indicador visual (Ex: ">" ou cor invertida)
+        if (item_index == current_selection) {
+            ssd1306_WriteString("> ", Font_7x10, 0); // 1 = Cor Branca / Ativa
+            ssd1306_WriteString(menu[item_index].name, Font_7x10, 0);
+        }
+        else {
+            ssd1306_WriteString("  ", Font_7x10, 1);
+            ssd1306_WriteString(menu[item_index].name, Font_7x10, 1);
+        }
+    }
+
+    ssd1306_UpdateScreen();
+}
+
+/**
+ * @brief Ajusta o item selecionado do menu e atualiza a rolagem
+ * @param new_selection índice do item selecionado pelo encoder
+ */
+void Menu_SetSelection(int16_t new_selection) {
+    if (new_selection < 0) {
+        new_selection = 0;
+    }
+    else if (new_selection >= NUM_ITEMS) {
+        new_selection = NUM_ITEMS - 1;
+    }
+
+    current_selection = new_selection;
+
+    if (current_selection < scroll_offset) {
+        scroll_offset = current_selection;
+    }
+    else if (current_selection >= scroll_offset + VISIBLE_LINES) {
+        scroll_offset = current_selection - VISIBLE_LINES + 1;
+    }
+
+    Menu_Display_Update();
+}
+
+
+
 /*!
  * @brief Main function
  */
-
 int main(void)
 {
 
 
-    char MSG[50] = { 0 };
+
     /* Init board hardware. */
     BOARD_InitHardware();
     BOARD_InitPeripherals();
@@ -252,7 +364,7 @@ int main(void)
     encoder_counter = 0;
 
     last_clk_state = GPIO_PinRead(ENCODER_GPIO, CLK_PIN);
-
+    Menu_SetSelection(0);
 
 
 
@@ -282,7 +394,12 @@ int main(void)
         // O loop principal fica livre e apenas processa a exibição dos dados
         if (print_flag) {
             print_flag = false;
-            Display_Menu();
+            int32_t encoder_value = encoder_counter;
+            int32_t delta = encoder_value - last_encoder_counter;
+            if (delta != 0) {
+                Menu_SetSelection(current_selection + delta);
+                last_encoder_counter = encoder_value;
+            }
         }
 
         // Verifica o clique do botão físico de forma não-bloqueante
@@ -292,8 +409,10 @@ int main(void)
 
             // Confirma se o botão continua pressionado pós-debounce
             if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0) {
-                Execute_Menu_Option();
-    
+                //Execute_Menu_Option();
+                if (menu[current_selection].callback != NULL) {
+                    menu[current_selection].callback(); // Executa a função associada
+                }
                 // Aguarda o usuário soltar o botão para não registrar múltiplos cliques
                 while (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0);
                 print_flag = true; // Força a atualização do menu após a execução da opção
