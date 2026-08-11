@@ -23,8 +23,10 @@
 #include "fsl_fxas.h" // Driver do sensor FXAS21002
 #include "fsl_lpi2c.h"  // Driver do I2C do K32L2
 #include "fxas_21002c.h"
+#include "fxos_8700cq.h"
 #include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
 #include <stdio.h>
+#include <stdbool.h>
  /*******************************************************************************
   * Definitions
   ******************************************************************************/
@@ -33,16 +35,52 @@
   /*******************************************************************************
    * Prototypes
    ******************************************************************************/
-
-   /*******************************************************************************
-    * Variables
-    ******************************************************************************/
+   // Declaração das funções de ação do menu
+void action_placeholder(void) { /* Código da ação aqui */ }
+/********************************************************************************
+ *  Variables
+******************************************************************************/
 volatile uint16_t SampleEventFlag;
 uint8_t txbuff[] = "Usart polling example\r\nBoard will send back received characters\r\n";
 uint8_t rxbuff[64] = { 0 };
 extern char MSG[50];
+// Definições do Display (SSD1306)
+#define NUM_ITEMS 16
+#define VISIBLE_LINES 4
+#define FONT_HEIGHT 10
 
 
+// Estrutura para os itens do menu
+typedef struct {
+    char name[20];
+    void (*callback)(void); // Função executada ao clicar no item
+} MenuItem;
+
+
+// Array com os 16 itens do menu
+MenuItem menu[NUM_ITEMS] = {
+    {"Usart one wire", action_placeholder},
+    {"Usb CDC",   action_placeholder},
+    {"Giroscopio",    teste_Giroscopio},
+    {"Acelerometro", FXOS_8700CQ},
+    {"Sensor Light", action_placeholder},
+    {"Push Buttons",     action_placeholder},
+    {"Led RGB",     action_placeholder},
+    {"RTC",   action_placeholder},
+    {"Cryptografia",   action_placeholder},
+    {"Protocolo",        action_placeholder},
+    {"Reset Fabrica", action_placeholder},
+    {"Sobre o Disp",  action_placeholder},
+    {"Diagnostico",   action_placeholder},
+    {"Economia Eng",  action_placeholder},
+    {"Contraste",     action_placeholder},
+    {"Close",          action_placeholder}
+};
+
+// Variáveis de controle do Menu
+int16_t current_selection = 0;
+int16_t scroll_offset = 0;
+volatile int32_t last_encoder_counter = 0;
 
 /*******************************************************************************
  * Code
@@ -99,176 +137,9 @@ void SysTick_Handler(void)
 }
 
 
-// Renderiza o menu no Terminal Serial
-// void Display_Menu(void) {
-//     // Limpa a tela do terminal serial simulando um display
 
-//     ssd1306_Fill(Black);
-//     memset(MSG, 0xFF, 50);
-//     sprintf(MSG, "--MENU DE TESTES--");
-//     ssd1306_SetCursor(2, 0);
-//     ssd1306_WriteString(MSG, Font_7x10, White);
-//     memset(MSG, 0xFF, 50);
-//     sprintf(MSG, "%s Usart ", (encoder_counter == OPCAO_1) ? "->[X]" : "  [ ]");
-//     ssd1306_SetCursor(2, 12);
-//     ssd1306_WriteString(MSG, Font_7x10, White);
-//     memset(MSG, 0xFF, 50);
-//     sprintf(MSG, "%s Usb ", (encoder_counter == OPCAO_2) ? "->[X]" : "  [ ]");
-//     ssd1306_SetCursor(2, 22);
-//     ssd1306_WriteString(MSG, Font_7x10, White);
-//     memset(MSG, 0xFF, 50);
-//     sprintf(MSG, "%s Giroscopio ", (encoder_counter == OPCAO_3) ? "->[X]" : "  [ ]");
-//     ssd1306_SetCursor(2, 32);
-//     ssd1306_WriteString(MSG, Font_7x10, White);
-//     ssd1306_UpdateScreen();
-
-// }
-
-void teste_Giroscopio(void)
-{
-    status_t result;
-    result = FXAS_21002c_Init();
-    if (result == kStatus_Success)
-    {
-        ssd1306_Fill(Black);
-        memset(MSG, 0xFF, 50);
-        sprintf(MSG, "LIB FRDM-K32L2A4S");
-        ssd1306_SetCursor(0, 0);
-        ssd1306_WriteString(MSG, Font_7x10, White);
-        ssd1306_UpdateScreen();
-        while (1)
-        {
-            // Ler pacote completo de dados brutos (Eixos X, Y e Z de uma só vez)
-            result = FXAS_ReadSensorData(&fxasHandle, &sensorData);
-
-            if (result == kStatus_Success)
-            {
-                // Combinar os pares de registradores de 8 bits em variáveis com sinal de 16 bits
-                int16_t xRaw = (int16_t)((sensorData.gyroXMSB << 8) | sensorData.gyroXLSB);
-                int16_t yRaw = (int16_t)((sensorData.gyroYMSB << 8) | sensorData.gyroYLSB);
-                int16_t zRaw = (int16_t)((sensorData.gyroZMSB << 8) | sensorData.gyroZLSB);
-
-                // Converter valores inteiros puros para graus por segundo utilizando a função nativa do driver
-                float xDegPerSec = FXAS_FormatFloat(xRaw, fxasConfig.fsrdps);
-                float yDegPerSec = FXAS_FormatFloat(yRaw, fxasConfig.fsrdps);
-                float zDegPerSec = FXAS_FormatFloat(zRaw, fxasConfig.fsrdps);
-
-                // Exibir os dados tratados no terminal serial da placa
-                sprintf(MSG, "Giroscopio (dps)");
-                ssd1306_SetCursor(2, 12);
-                ssd1306_WriteString(MSG, Font_7x10, White);
-                ssd1306_UpdateScreen();
-
-                sprintf(MSG, "X: %6.2f", xDegPerSec);
-                ssd1306_SetCursor(30, 25);
-                ssd1306_WriteString(MSG, Font_7x10, White);
-                ssd1306_UpdateScreen();
-
-                sprintf(MSG, "Y: %6.2f", yDegPerSec);
-                ssd1306_SetCursor(30, 35);
-                ssd1306_WriteString(MSG, Font_7x10, White);
-                ssd1306_UpdateScreen();
-
-                sprintf(MSG, "Z: %6.2f", zDegPerSec);
-                ssd1306_SetCursor(30, 45);
-                ssd1306_WriteString(MSG, Font_7x10, White);
-                ssd1306_UpdateScreen();
-            }
-            else
-            {
-                sprintf(MSG, "ERROR READING");
-                ssd1306_SetCursor(2, 10);
-                ssd1306_WriteString(MSG, Font_7x10, White);
-                ssd1306_UpdateScreen();
-            }
-
-            //Aguarda um curto intervalo antes da próxima amostragem
-            SDK_DelayAtLeastUs(200000, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
-
-            // Verifica o clique do botão físico de forma não-bloqueante
-            if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0) {
-                // Debounce simples via software para o botão físico
-                for (volatile int i = 0; i < 200000; i++);
-
-                // Confirma se o botão continua pressionado pós-debounce
-                if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0)
-                    break; // Sai do loop de teste do giroscópio
-            }
-        }
-    }
-}
-
-// Processa a ação da opção escolhida após o clique do botão
-void Execute_Menu_Option(void) {
-    //PRINTF("\r\n>>> Executando: ");
-    switch (encoder_counter) {
-    case OPCAO_1:
-        //PRINTF("Opcao 1 Selecionada! Iniciando sistema...\r\n");
-        break;
-    case OPCAO_2:
-        //PRINTF("Opcao 2 Selecionada! Abrindo configuracoes...\r\n");
-        break;
-    case OPCAO_3:
-        teste_Giroscopio();
-        break;
-    default:
-        break;
-    }
-    // Aguarda um momento para o usuário ler a mensagem na tela
-    // for (volatile int i = 0; i < 3000000; i++);
-    // menu_changed = true; // Força o redesenho do menu após a execução
-}
 
 //----------------------------------------------------------------------------------------------------------------------
-
-
-#include <stdbool.h>
-
-// Definições do Display (SSD1306)
-#define NUM_ITEMS 16
-#define VISIBLE_LINES 4
-#define FONT_HEIGHT 10
-
-// Protótipos de funções fictícias da sua biblioteca SSD1306 e GPIO
-// void SSD1306_Clear(void);
-// void SSD1306_GotoXY(uint16_t x, uint16_t y);
-// void SSD1306_Puts(char* str, FontDef_t* Font, uint8_t color);
-// void SSD1306_UpdateScreen(void);
-// bool Encoder_Get_Button_Pressed(void);
-
-// Estrutura para os itens do menu
-typedef struct {
-    char name[20];
-    void (*callback)(void); // Função executada ao clicar no item
-} MenuItem;
-
-// Declaração das funções de ação do menu
-void action_placeholder(void) { /* Código da ação aqui */ }
-
-// Array com os 16 itens do menu
-MenuItem menu[NUM_ITEMS] = {
-    {"Usart one wire", action_placeholder},
-    {"Usb CDC",   action_placeholder},
-    {"Giroscopio",    teste_Giroscopio},
-    {"Acelerometro", action_placeholder},
-    {"Sensor Light", action_placeholder},
-    {"Push Buttons",     action_placeholder},
-    {"Led RGB",     action_placeholder},
-    {"RTC",   action_placeholder},
-    {"Cryptografia",   action_placeholder},
-    {"Protocolo",        action_placeholder},
-    {"Reset Fabrica", action_placeholder},
-    {"Sobre o Disp",  action_placeholder},
-    {"Diagnostico",   action_placeholder},
-    {"Economia Eng",  action_placeholder},
-    {"Contraste",     action_placeholder},
-    {"Close",          action_placeholder}
-};
-
-// Variáveis de controle do Menu
-int16_t current_selection = 0;
-int16_t scroll_offset = 0;
-volatile int32_t last_encoder_counter = 0;
 
 /**
  * @brief Atualiza e renderiza o menu no display SSD1306
@@ -336,9 +207,6 @@ void Menu_SetSelection(int16_t new_selection) {
  */
 int main(void)
 {
-
-
-
     /* Init board hardware. */
     BOARD_InitHardware();
     BOARD_InitPeripherals();
@@ -365,10 +233,6 @@ int main(void)
 
     last_clk_state = GPIO_PinRead(ENCODER_GPIO, CLK_PIN);
     Menu_SetSelection(0);
-
-
-
-
 
     /* Add user custom codes below */
     while (1)

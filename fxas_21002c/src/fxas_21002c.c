@@ -3,7 +3,9 @@
  *        TEL: (011) 4109-0577                 SITE: www.tecnodev.com.br       *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 #include "fxas_21002c.h"
-
+#include "encoder_ky_040.h"
+#include "ssd1306.h"
+#include "ssd1306_fonts.h"
  /*******************************************************************************
   * Definitions
   ******************************************************************************/
@@ -83,4 +85,78 @@ status_t FXAS_21002c_Init(void)
     //PRINTF("\r\nSensor FXAS21002C detectado e inicializado com sucesso!\r\n");
     return result;
 
+}
+
+void teste_Giroscopio(void)
+{
+    status_t result;
+    result = FXAS_21002c_Init();
+    if (result == kStatus_Success)
+    {
+        ssd1306_Fill(Black);
+        memset(MSG, 0xFF, 50);
+        sprintf(MSG, "LIB FRDM-K32L2A4S");
+        ssd1306_SetCursor(0, 0);
+        ssd1306_WriteString(MSG, Font_7x10, White);
+        ssd1306_UpdateScreen();
+        while (1)
+        {
+            // Ler pacote completo de dados brutos (Eixos X, Y e Z de uma só vez)
+            result = FXAS_ReadSensorData(&fxasHandle, &sensorData);
+
+            if (result == kStatus_Success)
+            {
+                // Combinar os pares de registradores de 8 bits em variáveis com sinal de 16 bits
+                int16_t xRaw = (int16_t)((sensorData.gyroXMSB << 8) | sensorData.gyroXLSB);
+                int16_t yRaw = (int16_t)((sensorData.gyroYMSB << 8) | sensorData.gyroYLSB);
+                int16_t zRaw = (int16_t)((sensorData.gyroZMSB << 8) | sensorData.gyroZLSB);
+
+                // Converter valores inteiros puros para graus por segundo utilizando a função nativa do driver
+                float xDegPerSec = FXAS_FormatFloat(xRaw, fxasConfig.fsrdps);
+                float yDegPerSec = FXAS_FormatFloat(yRaw, fxasConfig.fsrdps);
+                float zDegPerSec = FXAS_FormatFloat(zRaw, fxasConfig.fsrdps);
+
+                // Exibir os dados tratados no terminal serial da placa
+                sprintf(MSG, "Giroscopio (dps)");
+                ssd1306_SetCursor(2, 12);
+                ssd1306_WriteString(MSG, Font_7x10, White);
+                ssd1306_UpdateScreen();
+
+                sprintf(MSG, "X: %6.2f", xDegPerSec);
+                ssd1306_SetCursor(30, 25);
+                ssd1306_WriteString(MSG, Font_7x10, White);
+                ssd1306_UpdateScreen();
+
+                sprintf(MSG, "Y: %6.2f", yDegPerSec);
+                ssd1306_SetCursor(30, 35);
+                ssd1306_WriteString(MSG, Font_7x10, White);
+                ssd1306_UpdateScreen();
+
+                sprintf(MSG, "Z: %6.2f", zDegPerSec);
+                ssd1306_SetCursor(30, 45);
+                ssd1306_WriteString(MSG, Font_7x10, White);
+                ssd1306_UpdateScreen();
+            }
+            else
+            {
+                sprintf(MSG, "ERROR READING");
+                ssd1306_SetCursor(2, 10);
+                ssd1306_WriteString(MSG, Font_7x10, White);
+                ssd1306_UpdateScreen();
+            }
+
+            //Aguarda um curto intervalo antes da próxima amostragem
+            SDK_DelayAtLeastUs(200000, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
+
+            // Verifica o clique do botão físico de forma não-bloqueante
+            if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0) {
+                // Debounce simples via software para o botão físico
+                for (volatile int i = 0; i < 200000; i++);
+
+                // Confirma se o botão continua pressionado pós-debounce
+                if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0)
+                    break; // Sai do loop de teste do giroscópio
+            }
+        }
+    }
 }
