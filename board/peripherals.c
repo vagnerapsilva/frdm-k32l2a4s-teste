@@ -370,7 +370,7 @@ instance:
       - clockSource: 'kTPM_SystemClock'
       - tpmSrcClkFreq: 'ClocksTool_DefaultInit'
       - prescale: 'kTPM_Prescale_Divide_128'
-      - timerFrequency: '1000'
+      - timerFrequency: '100'
       - useGlobalTimeBase: 'false'
       - triggerSelect: 'kTPM_Trigger_Select_1'
       - triggerSource: 'kTPM_TriggerSource_Internal'
@@ -408,7 +408,7 @@ const tpm_config_t TPM0_config = {
 
 static void TPM0_init(void) {
   TPM_Init(TPM0_PERIPHERAL, &TPM0_config);
-  TPM_SetTimerPeriod(TPM0_PERIPHERAL, ((TPM0_CLOCK_SOURCE/ (1U << (TPM0_PERIPHERAL->SC & TPM_SC_PS_MASK))) / 1000) + 1);
+  TPM_SetTimerPeriod(TPM0_PERIPHERAL, ((TPM0_CLOCK_SOURCE/ (1U << (TPM0_PERIPHERAL->SC & TPM_SC_PS_MASK))) / 100) + 1);
   TPM_EnableInterrupts(TPM0_PERIPHERAL, kTPM_TimeOverflowInterruptEnable);
   /* Enable interrupt TPM0_IRQN request in the NVIC */
   EnableIRQ(TPM0_IRQN);
@@ -493,6 +493,77 @@ static void ADC0_init(void) {
   ADC16_EnableHardwareTrigger(ADC0_PERIPHERAL, false);
   /* Configure channel multiplexing mode */
   ADC16_SetChannelMuxMode(ADC0_PERIPHERAL, ADC0_muxMode);
+}
+
+/***********************************************************************************************************************
+ * RTC initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'RTC'
+- type: 'rtc'
+- mode: 'general'
+- custom_name_enabled: 'false'
+- type_id: 'rtc_2.3.0'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'RTC'
+- config_sets:
+  - fsl_rtc:
+    - clockConfig_t:
+      - clockSource: 'clk_32khz'
+      - clockSourceFreq: 'ClocksTool_DefaultInit'
+    - rtc_config:
+      - updateMode: 'false'
+      - supervisorAccess: 'false'
+      - compensationIntervalInt: '1'
+      - compensationTimeInt: '0'
+      - setDateTime: 'false'
+      - rtc_datetime:
+        - year: '1970'
+        - month: '1'
+        - day: '1'
+        - hour: '0'
+        - minute: '0'
+        - second: '0'
+      - setAlarm: 'false'
+      - alarm_datetime:
+        - year: '1970'
+        - month: '1'
+        - day: '1'
+        - hour: '0'
+        - minute: '0'
+        - second: '0'
+      - start: 'false'
+    - interruptsCfg:
+      - interruptSources: ''
+      - isSecondsInterruptEnabled: 'false'
+      - secondsInterrupt:
+        - IRQn: 'RTC_Seconds_IRQn'
+        - enable_interrrupt: 'enabled'
+        - enable_priority: 'false'
+        - priority: '1'
+        - enable_custom_name: 'false'
+      - isInterruptEnabled: 'false'
+      - commonInterrupt:
+        - IRQn: 'RTC_IRQn'
+        - enable_interrrupt: 'enabled'
+        - enable_custom_name: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const rtc_config_t RTC_config = {
+  .wakeupSelect = false,
+  .updateMode = false,
+  .supervisorAccess = false,
+  .compensationInterval = 0x0U,
+  .compensationTime = 0x0U
+};
+
+static void RTC_init(void) {
+  /* RTC initialization */
+  RTC_Init(RTC_PERIPHERAL, &RTC_config);
+  /* Set 32kHz clock source */
+  RTC_EnableLPOClock(RTC_PERIPHERAL, false);
 }
 
 /***********************************************************************************************************************
@@ -596,6 +667,7 @@ void BOARD_InitPeripherals(void)
   LPI2C2_init();
   TPM0_init();
   ADC0_init();
+  RTC_init();
   USB0_init();
   /* Common post-initialization */
   BOARD_InitPeripherals_CommonPostInit();

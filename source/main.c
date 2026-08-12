@@ -24,6 +24,7 @@
 #include "fsl_lpi2c.h"  // Driver do I2C do K32L2
 #include "fxas_21002c.h"
 #include "fxos_8700cq.h"
+#include "light_sensor.h"
 #include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
 #include "usart.h" // Driver do USART
 #include <stdio.h>
@@ -63,7 +64,7 @@ MenuItem menu[NUM_ITEMS] = {
     {"Usb CDC       ", action_placeholder},
     {"Giroscopio    ", teste_Giroscopio},
     {"Acelerometro  ", FXOS_8700CQ},
-    {"Sensor Light  ", action_placeholder},
+    {"Light Sensor  ", light_sensor_test},
     {"Push Buttons  ", action_placeholder},
     {"Led RGB       ", action_placeholder},
     {"RTC           ", action_placeholder},
@@ -186,15 +187,8 @@ int main(void)
 
     last_clk_state = GPIO_PinRead(ENCODER_GPIO, CLK_PIN);
     Menu_SetSelection(0);
-
-
-    ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP, &ADC0_channelsConfig[0]);
-    while (0U == (kADC16_ChannelConversionDoneFlag &
-        ADC16_GetChannelStatusFlags(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP)))
-    {
-    }
-    uint32_t adc_value = ADC16_GetChannelConversionValue(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP);
-
+    rtc_datetime_t date;
+    RTC_GetDatetime(RTC, &date);
     /* Add user custom codes below */
     while (1)
     {

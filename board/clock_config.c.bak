@@ -150,6 +150,7 @@ outputs:
 - {id: PCC0.PCC_USB0_CLK.outFreq, value: 48 MHz}
 - {id: PCC1.PCC_LPI2C0_CLK.outFreq, value: 4 MHz}
 - {id: PCC1.PCC_LPUART0_CLK.outFreq, value: 4 MHz}
+- {id: PCC1.PCC_TPM0_CLK.outFreq, value: 4 MHz}
 - {id: SIRCDIV3_CLK.outFreq, value: 4 MHz}
 - {id: SIRC_CLK.outFreq, value: 8 MHz}
 - {id: Slow_clock.outFreq, value: 24 MHz}
@@ -158,6 +159,7 @@ settings:
 - {id: PCC0.PCC_LPI2C2_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: PCC1.PCC_LPI2C0_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: PCC1.PCC_LPUART0_SEL.sel, value: SCG.SIRCDIV3_CLK}
+- {id: PCC1.PCC_TPM0_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: SCG.FIRCDIV1.scale, value: '1', locked: true}
 - {id: SCG.FIRCDIV3.scale, value: '1', locked: true}
 - {id: SCG.SIRCDIV3.scale, value: '2', locked: true}
@@ -250,6 +252,8 @@ void BOARD_BootClockRUN(void)
     CLOCK_SetIpSrc(kCLOCK_Lpi2c2, kCLOCK_IpSrcSircAsync);
     /* Set PCC USB0 selection */
     CLOCK_SetIpSrc(kCLOCK_Usbfs0, kCLOCK_IpSrcNoneOrExt);
+    /* Set PCC TPM0 selection */
+    CLOCK_SetIpSrc(kCLOCK_Tpm0, kCLOCK_IpSrcSircAsync);
     /* Set PCC LPI2C0 selection */
     CLOCK_SetIpSrc(kCLOCK_Lpi2c0, kCLOCK_IpSrcSircAsync);
     /* Set PCC LPUART0 selection */

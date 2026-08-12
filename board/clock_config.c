@@ -146,6 +146,7 @@ outputs:
 - {id: FIRCDIV1_CLK.outFreq, value: 48 MHz}
 - {id: FIRCDIV3_CLK.outFreq, value: 48 MHz}
 - {id: LPO_clock.outFreq, value: 1 kHz}
+- {id: OSC32KCLK.outFreq, value: 32.768 kHz}
 - {id: PCC0.PCC_LPI2C2_CLK.outFreq, value: 4 MHz}
 - {id: PCC0.PCC_USB0_CLK.outFreq, value: 48 MHz}
 - {id: PCC1.PCC_LPI2C0_CLK.outFreq, value: 4 MHz}
@@ -153,6 +154,9 @@ outputs:
 - {id: PCC1.PCC_TPM0_CLK.outFreq, value: 4 MHz}
 - {id: SIRCDIV3_CLK.outFreq, value: 4 MHz}
 - {id: SIRC_CLK.outFreq, value: 8 MHz}
+- {id: SOSCDIV3_CLK.outFreq, value: 32.768 kHz}
+- {id: SOSCER_CLK.outFreq, value: 32.768 kHz}
+- {id: SOSC_CLK.outFreq, value: 32.768 kHz}
 - {id: Slow_clock.outFreq, value: 24 MHz}
 - {id: System_clock.outFreq, value: 48 MHz}
 settings:
@@ -169,7 +173,7 @@ settings:
 - {id: SCG_SOSCCSR_SOSCERCLKEN_CFG, value: Enabled}
 sources:
 - {id: PCC0.USBCLK_EXT.outFreq, value: 48 MHz, enabled: true}
-- {id: SCG.SOSC.outFreq, value: 32.768 kHz}
+- {id: SCG.SOSC.outFreq, value: 32.768 kHz, enabled: true}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
@@ -195,7 +199,7 @@ const scg_sys_clk_config_t g_sysClkConfig_BOARD_BootClockRUN =
     };
 const scg_sosc_config_t g_scgSysOscConfig_BOARD_BootClockRUN =
     {
-        .freq = 0U,                               /* System Oscillator frequency: 0Hz */
+        .freq = 32768U,                           /* System Oscillator frequency: 32768Hz */
         .enableMode = kSCG_SysOscEnable | kSCG_SysOscEnableErClk,/* Enable System OSC clock, Enable OSCERCLK */
         .monitorMode = kSCG_SysOscMonitorDisable, /* Monitor disabled */
         .div1 = kSCG_AsyncClkDisable,             /* System OSC Clock Divider 1: Clock output is disabled */
@@ -235,6 +239,10 @@ void BOARD_BootClockRUN(void)
 {
     scg_sys_clk_config_t curConfig;
 
+    /* Init SOSC according to board configuration. */
+    CLOCK_InitSysOsc(&g_scgSysOscConfig_BOARD_BootClockRUN);
+    /* Set the XTAL0 frequency based on board settings. */
+    CLOCK_SetXtal0Freq(g_scgSysOscConfig_BOARD_BootClockRUN.freq);
     /* Init FIRC. */
     CLOCK_CONFIG_FircSafeConfig(&g_scgFircConfig_BOARD_BootClockRUN);
     /* Init SIRC. */

@@ -22,6 +22,7 @@
 #include "fsl_lpuart.h"
 #include "fsl_tpm.h"
 #include "fsl_adc16.h"
+#include "fsl_rtc.h"
 #include "usb_device_composite.h"
 
 #if defined(__cplusplus)
@@ -74,6 +75,8 @@ extern "C" {
 #define ADC0_IRQHANDLER ADC0_IRQHandler
 /* Channel 0 (SE.6b) conversion control group. */
 #define ADC0_CH0_CONTROL_GROUP 0
+/* Definition of peripheral ID */
+#define RTC_PERIPHERAL RTC
 
 /***********************************************************************************************************************
  * Global variables
@@ -91,6 +94,8 @@ extern const tpm_config_t TPM0_config;
 extern adc16_channel_config_t ADC0_channelsConfig[1];
 extern const adc16_config_t ADC0_config;
 extern const adc16_channel_mux_mode_t ADC0_muxMode;
+/* RTC configuration */
+extern const rtc_config_t RTC_config;
 
 /***********************************************************************************************************************
  * Initialization functions

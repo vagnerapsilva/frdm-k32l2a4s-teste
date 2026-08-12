@@ -1,0 +1,134 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+// Estrutura de data e hora assumida
+typedef struct {
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+} rtc_datetime_t;
+
+// Estados para a máquina de estados do menu
+typedef enum {
+    EDIT_NONE,
+    EDIT_DAY,
+    EDIT_MONTH,
+    EDIT_YEAR,
+    EDIT_HOUR,
+    EDIT_MINUTE,
+    EDIT_SAVE
+} edit_state_t;
+
+void ajustar_data_hora(rtc_datetime_t *dt) {
+    edit_state_t estado = EDIT_DAY;
+    bool atualiza_display = true;
+    char buffer[32];
+    
+    // Variáveis para armazenar a leitura do encoder
+    int32_t clique_encoder = 0; 
+    int32_t giro_encoder = 0;
+
+    while (estado != EDIT_SAVE) {
+        
+        // 1. LEITURA DOS HARDWARES (Substitua pelas suas funções da FRDM-K32)
+        // giro_encoder deve retornar: -1 (anti-horário), 1 (horário) ou 0 (parado)
+        giro_encoder = ENCODER_LerGiro(); 
+        // clique_encoder deve retornar: 1 se o botão foi pressionado, 0 se não
+        clique_encoder = ENCODER_LerClique(); 
+
+        // 2. PROCESSAMENTO DO BOTÃO (Mudança de Campo)
+        if (clique_encoder) {
+            estado++; // Avança para o próximo campo
+            atualiza_display = true;
+            clique_encoder = 0;
+            // Delay simples para debounce do botão
+            for(volatile int i=0; i<100000; i++); 
+        }
+
+        // 3. PROCESSAMENTO DO GIRO (Alteração dos Valores)
+        if (giro_encoder != 0) {
+            atualiza_display = true;
+            
+            switch (estado) {
+                case EDIT_DAY:
+                    dt->day += giro_encoder;
+                    if (dt->day < 1) dt->day = 31;
+                    if (dt->day > 31) dt->day = 1; // Simplificado (sem validação de mês bissexto)
+                    break;
+                    
+                case EDIT_MONTH:
+                    dt->month += giro_encoder;
+                    if (dt->month < 1) dt->month = 12;
+                    if (dt->month > 12) dt->month = 1;
+                    break;
+                    
+                case EDIT_YEAR:
+                    dt->year += giro_encoder;
+                    if (dt->year < 2000) dt->year = 2099;
+                    if (dt->year > 2099) dt->year = 2000;
+                    break;
+                    
+                case EDIT_HOUR:
+                    dt->hour += giro_encoder;
+                    if (dt->hour > 23) dt->hour = 23; // Se for menor que 0, vira 255 (uint8_t)
+                    if (dt->hour == 255) dt->hour = 23;
+                    if (dt->hour > 23) dt->hour = 0;
+                    break;
+                    
+                case EDIT_MINUTE:
+                    dt->minute += giro_encoder;
+                    if (dt->minute == 255) dt->minute = 59;
+                    if (dt->minute > 59) dt->minute = 0;
+                    break;
+                    
+                default:
+                    break;
+            }
+            giro_encoder = 0; // Reseta a leitura do giro
+        }
+
+        // 4. ATUALIZAÇÃO DO DISPLAY SSD1306
+        if (atualiza_display) {
+            atualiza_display = false;
+            
+            // Limpa o buffer do display (Função típica da biblioteca SSD1306)
+            SSD1306_Clear(); 
+            
+            // Renderiza o título
+            SSD1306_GotoXY(0, 0);
+            SSD1306_Puts("Ajustar Data/Hora", &Font_7x10, 1);
+            
+            // Formata a string de Data: DD/MM/AAAA
+            snprintf(buffer, sizeof(buffer), "Data: %02d/%02d/%04d", dt->day, dt->month, dt->year);
+            SSD1306_GotoXY(0, 20);
+            SSD1306_Puts(buffer, &Font_7x10, 1);
+            
+            // Formata a string de Hora: HH:MM
+            snprintf(buffer, sizeof(buffer), "Hora: %02d:%02d", dt->hour, dt->minute);
+            SSD1306_GotoXY(0, 35);
+            SSD1306_Puts(buffer, &Font_7x10, 1);
+            
+            // Desenha um indicador visual (sublinhado ou seta) no campo ativo
+            // Baseado no espaçamento da Font_7x10 (7 pixels de largura por caractere)
+            SSD1306_GotoXY(0, 50);
+            switch (estado) {
+                case EDIT_DAY:    SSD1306_Puts("Ajustando: DIA", &Font_7x10, 1); break;
+                case EDIT_MONTH:  SSD1306_Puts("Ajustando: MES", &Font_7x10, 1); break;
+                case EDIT_YEAR:   SSD1306_Puts("Ajustando: ANO", &Font_7x10, 1); break;
+                case EDIT_HOUR:   SSD1306_Puts("Ajustando: HORA", &Font_7x10, 1); break;
+                case EDIT_MINUTE: SSD1306_Puts("Ajustando: MIN", &Font_7x10, 1); break;
+                default: break;
+            }
+            
+            // Atualiza o display físico com os novos dados do buffer
+            SSD1306_UpdateScreen(); 
+        }
+    }
+    
+    // Salva os dados no periférico RTC da FRDM-K32 aqui se necessário
+    // RTC_SetDatetime(RTC, dt);
+}

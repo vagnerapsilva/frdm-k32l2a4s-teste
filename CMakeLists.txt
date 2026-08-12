@@ -75,6 +75,9 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/fxos_8700cq/inc/fxos_8700cq.h"
 "${ProjDirPath}/usart/inc/usart.h"
 "${ProjDirPath}/usart/src/usart.c"
+"${ProjDirPath}/light_sensor/src/light_sensor.c"
+"${ProjDirPath}/light_sensor/inc/light_sensor.h"
+
 )
 
 
@@ -90,7 +93,7 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/fxos_8700cq/inc"
 "${ProjDirPath}/encoder/inc"
 "${ProjDirPath}/usart/inc"
-
+"${ProjDirPath}/light_sensor/inc"
 
 )
 
