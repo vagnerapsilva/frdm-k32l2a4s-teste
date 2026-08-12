@@ -278,7 +278,7 @@
 #  set(CONFIG_USE_driver_cmp true)
 
 #  # description: ADC16 Driver
-#  set(CONFIG_USE_driver_adc16 true)
+  set(CONFIG_USE_driver_adc16 true)
 
 #  # description: Component lpuart_adapter
 #  set(CONFIG_USE_component_lpuart_adapter true)
@@ -329,13 +329,13 @@
 #  set(CONFIG_USE_component_serial_manager_usb_cdc true)
 
 #  # description: Driver fxas21002cq
-#  set(CONFIG_USE_driver_fxas21002cq true)
+  set(CONFIG_USE_driver_fxas21002cq true)
 
 #  # description: Driver fxls8974cf
 #  set(CONFIG_USE_driver_fxls8974cf true)
 
 #  # description: Driver fxos8700cq
-#  set(CONFIG_USE_driver_fxos8700cq true)
+  set(CONFIG_USE_driver_fxos8700cq true)
 
 #  # description: Driver htu21d
 #  set(CONFIG_USE_driver_htu21d true)

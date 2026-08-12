@@ -21,6 +21,7 @@
 #include "fsl_lpi2c.h"
 #include "fsl_lpuart.h"
 #include "fsl_tpm.h"
+#include "fsl_adc16.h"
 #include "usb_device_composite.h"
 
 #if defined(__cplusplus)
@@ -65,6 +66,14 @@ extern "C" {
 #define TPM0_IRQN TPM0_IRQn
 /* TPM0 interrupt handler identifier. */
 #define TPM0_IRQHANDLER TPM0_IRQHandler
+/* Alias for ADC0 peripheral */
+#define ADC0_PERIPHERAL ADC0
+/* ADC0 interrupt vector ID (number). */
+#define ADC0_IRQN ADC0_IRQn
+/* ADC0 interrupt handler identifier. */
+#define ADC0_IRQHANDLER ADC0_IRQHandler
+/* Channel 0 (SE.6b) conversion control group. */
+#define ADC0_CH0_CONTROL_GROUP 0
 
 /***********************************************************************************************************************
  * Global variables
@@ -79,6 +88,9 @@ extern lpi2c_master_transfer_t LPI2C2_masterTransfer;
 extern uint8_t LPI2C2_masterBuffer[LPI2C2_MASTER_BUFFER_SIZE];
 extern lpi2c_master_handle_t LPI2C2_masterHandle;
 extern const tpm_config_t TPM0_config;
+extern adc16_channel_config_t ADC0_channelsConfig[1];
+extern const adc16_config_t ADC0_config;
+extern const adc16_channel_mux_mode_t ADC0_muxMode;
 
 /***********************************************************************************************************************
  * Initialization functions

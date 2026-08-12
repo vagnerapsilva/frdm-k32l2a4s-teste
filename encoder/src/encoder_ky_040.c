@@ -1,9 +1,14 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/*******************************************************************************
  *        TECNODEV TECNOLOGIA DE DESENVOLVIMENTIO DE SOFTWARE E SERVICOS       *
  *        TEL: (011) 4109-0577                 SITE: www.tecnodev.com.br       *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+ * encoder_ky_040.c                                                            *
+ *                                                                             *
+ * Implementação do suporte ao encoder rotativo KY-040.                        *
+ *                                                                             *
+ * O arquivo inicializa um timer de 1 ms usando LPIT e processa alterações de  *
+ * borda no sinal CLK do encoder dentro do interrupt handler TPM0.             *
+ ******************************************************************************/
 #include "encoder_ky_040.h"
-
 #include "fsl_device_registers.h"
 #include "fsl_debug_console.h"
 #include "fsl_gpio.h"
@@ -16,116 +21,115 @@
 #include "board.h"
 #include "app.h"
 #include "fsl_tpm.h"
+
+
  /*******************************************************************************
   * Definitions
   ******************************************************************************/
-  // Definições de Pinos e Periféricos
 
-
+  // Identifica o módulo LPIT e o canal usado para gerar um intervalo de 1 ms.
 #define ENCODER_LPIT_BASE   LPIT0
 #define ENCODER_LPIT_CH     kLPIT_Chnl_0
 #define LPIT_IRQ_HANDLER    LPIT0_IRQHandler
 #define LPIT_IRQ_NUM        LPIT0_IRQn
-  /*******************************************************************************
-   * Prototypes
-   ******************************************************************************/
 
-   /*******************************************************************************
-   * Variables
-   ******************************************************************************/
-   // Variáveis globais voláteis (modificadas na interrupção)
+/*******************************************************************************
+ * Variables
+ ******************************************************************************/
+
+ // Contador de passos do encoder. Incrementado ou decrementado na interrupção.
 volatile int32_t encoder_counter = 0;
+
+// Estado anterior do pino CLK do encoder para detectar bordas.
 volatile uint32_t last_clk_state = 0;
+
+// Flag utilizada para avisar o loop principal que o valor mudou.
 volatile bool print_flag = false;
 
 /*******************************************************************************
  * Code
  ******************************************************************************/
 
- // // Inicialização dos pinos GPIO
- // void Init_Encoder_Pins(void) {
- //     CLOCK_EnableClock(kCLOCK_PortA);
-
- //     PORT_SetPinMux(ENCODER_PORT, CLK_PIN, kPORT_MuxAsGpio);
- //     PORT_SetPinMux(ENCODER_PORT, DT_PIN, kPORT_MuxAsGpio);
- //     PORT_SetPinMux(ENCODER_PORT, SW_PIN, kPORT_MuxAsGpio);
-
- //     gpio_pin_config_t input_config = { kGPIO_DigitalInput, 0 };
- //     GPIO_PinInit(ENCODER_GPIO, CLK_PIN, &input_config);
- //     GPIO_PinInit(ENCODER_GPIO, DT_PIN, &input_config);
- //     GPIO_PinInit(ENCODER_GPIO, SW_PIN, &input_config);
- // }
-
- // Inicialização do Timer (LPIT) para 1 milissegundo utilizando a fsl_lpit.h v2.1.1
+ /**
+  * Init_Timer_1ms
+  *
+  * Inicializa o temporizador LPIT para gerar uma interrupção periódica a cada
+  * 1 milissegundo. Este timer pode ser usado para amostrar o encoder de forma
+  * consistente ou para outras tarefas periódicas no aplicativo.
+  */
 void Init_Timer_1ms(void) {
     lpit_config_t lpitConfig;
-    lpit_chnl_params_t lpitChannelConfig; // Corrigido para o tipo correto da sua lib
+    lpit_chnl_params_t lpitChannelConfig; // Configurações do canal de timer
 
-    // 1. Configura a fonte de clock para o periférico LPIT
-
+    // Habilita o clock do periférico LPIT.
     CLOCK_EnableClock(kCLOCK_Lpit0);
 
-    // 2. Inicializa o módulo básico do LPIT
+    // Obtém a configuração padrão do LPIT e habilita operação durante debug.
     LPIT_GetDefaultConfig(&lpitConfig);
-    lpitConfig.enableRunInDebug = true; // Permite que o timer continue rodando ao pausar o debugger
+    lpitConfig.enableRunInDebug = true; // Permite manter o timer ativo ao pausar o debugger
     LPIT_Init(ENCODER_LPIT_BASE, &lpitConfig);
 
-    // 3. Preenche a estrutura com os enums exatos contidos na sua fsl_lpit.h
+    // Configura o canal de timer para modo periódico com trigger interno.
     lpitChannelConfig.chainChannel = false;
     lpitChannelConfig.timerMode = kLPIT_PeriodicCounter;
     lpitChannelConfig.triggerSource = kLPIT_TriggerSource_Internal;
-    lpitChannelConfig.triggerSelect = kLPIT_Trigger_TimerChn0; // Ajustado para o enum da sua lib
-    lpitChannelConfig.enableReloadOnTrigger = false;                   // Campo existente na sua struct
-    lpitChannelConfig.enableStopOnTimeout = false;                   // Campo existente na sua struct
-    lpitChannelConfig.enableStartOnTrigger = false;                   // Começa a decrementar imediatamente
+    lpitChannelConfig.triggerSelect = kLPIT_Trigger_TimerChn0;
+    lpitChannelConfig.enableReloadOnTrigger = false;
+    lpitChannelConfig.enableStopOnTimeout = false;
+    lpitChannelConfig.enableStartOnTrigger = false;
 
-    // 4. Configura o canal do timer
     LPIT_SetupChannel(ENCODER_LPIT_BASE, ENCODER_LPIT_CH, &lpitChannelConfig);
 
-    // 5. Calcula e define o período para 1ms
+    // Define o período do timer para 1 ms usando a frequência do clock do LPIT.
     uint32_t lpitSrcClock_Hz = CLOCK_GetIpFreq(kCLOCK_Lpit0);
     LPIT_SetTimerPeriod(ENCODER_LPIT_BASE, ENCODER_LPIT_CH, USEC_TO_COUNT(1000U, lpitSrcClock_Hz));
 
-    // 6. Habilita a interrupção do canal e no NVIC do Cortex-M
+    // Habilita interrupção do canal e registra no NVIC.
     LPIT_EnableInterrupts(ENCODER_LPIT_BASE, kLPIT_Channel0TimerInterruptEnable);
     EnableIRQ(LPIT_IRQ_NUM);
 
-    // 7. Inicia a contagem do Timer
+    // Inicia a contagem periódica.
     LPIT_StartTimer(ENCODER_LPIT_BASE, ENCODER_LPIT_CH);
 }
 
-
-
-/* TPM0_IRQn interrupt handler */
+/**
+ * TPM0_IRQHANDLER
+ *
+ * Trata a interrupção do TPM0. Lê o estado atual do pino CLK do encoder e
+ * detecta mudanças de borda para contabilizar passos. O valor de encoder_counter
+ * é incrementado ou decrementado conforme a direção de rotação.
+ */
 void TPM0_IRQHANDLER(void) {
     uint32_t intStatus;
-    /* Reading all interrupt flags of status register */
+
+    // Limpa todas as flags de interrupção do TPM0.
     intStatus = TPM_GetStatusFlags(TPM0_PERIPHERAL);
     TPM_ClearStatusFlags(TPM0_PERIPHERAL, intStatus);
 
-    /* Place your code here */
-
-
-    // Leitura rápida dos pinos
+    // Leitura do estado atual do sinal CLK do encoder.
     uint32_t current_clk_state = GPIO_PinRead(ENCODER_GPIO, CLK_PIN);
 
-    // Verifica se houve mudança na borda do sinal CLK
+    // Detecta borda de transição no pino CLK.
     if (current_clk_state != last_clk_state) {
         if (current_clk_state == 0) {
+            // Determina direção comparando DT com CLK.
             if (GPIO_PinRead(ENCODER_GPIO, DT_PIN) != current_clk_state) {
                 encoder_counter++;
             }
             else {
                 encoder_counter--;
             }
-           // 3. Mantém o efeito carrossel infinito entre as 3 opções
+
+            // Mantém o contador dentro do intervalo válido para rotações circulares.
             if (encoder_counter > 16) {
                 encoder_counter = 0;
             }
             else if (encoder_counter < 0) {
                 encoder_counter = 16;
             }
-            print_flag = true; // Sinaliza ao loop principal para imprimir o valor atualizado
+
+            // Indica que o valor mudou e deve ser exibido ou processado.
+            print_flag = true;
         }
     }
 

@@ -73,6 +73,8 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/encoder/inc/encoder_ky_040.h"
 "${ProjDirPath}/fxos_8700cq/src/fxos_8700cq.c" 
 "${ProjDirPath}/fxos_8700cq/inc/fxos_8700cq.h"
+"${ProjDirPath}/usart/inc/usart.h"
+"${ProjDirPath}/usart/src/usart.c"
 )
 
 
@@ -87,6 +89,8 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/fxas_21002c/inc"
 "${ProjDirPath}/fxos_8700cq/inc"
 "${ProjDirPath}/encoder/inc"
+"${ProjDirPath}/usart/inc"
+
 
 )
 

@@ -25,6 +25,7 @@
 #include "fxas_21002c.h"
 #include "fxos_8700cq.h"
 #include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
+#include "usart.h" // Driver do USART
 #include <stdio.h>
 #include <stdbool.h>
  /*******************************************************************************
@@ -41,8 +42,7 @@ void action_placeholder(void) { /* Código da ação aqui */ }
  *  Variables
 ******************************************************************************/
 volatile uint16_t SampleEventFlag;
-uint8_t txbuff[] = "Usart polling example\r\nBoard will send back received characters\r\n";
-uint8_t rxbuff[64] = { 0 };
+
 extern char MSG[50];
 // Definições do Display (SSD1306)
 #define NUM_ITEMS 16
@@ -59,22 +59,22 @@ typedef struct {
 
 // Array com os 16 itens do menu
 MenuItem menu[NUM_ITEMS] = {
-    {"Usart one wire", action_placeholder},
-    {"Usb CDC",   action_placeholder},
-    {"Giroscopio",    teste_Giroscopio},
-    {"Acelerometro", FXOS_8700CQ},
-    {"Sensor Light", action_placeholder},
-    {"Push Buttons",     action_placeholder},
-    {"Led RGB",     action_placeholder},
-    {"RTC",   action_placeholder},
-    {"Cryptografia",   action_placeholder},
-    {"Protocolo",        action_placeholder},
-    {"Reset Fabrica", action_placeholder},
-    {"Sobre o Disp",  action_placeholder},
-    {"Diagnostico",   action_placeholder},
-    {"Economia Eng",  action_placeholder},
-    {"Contraste",     action_placeholder},
-    {"Close",          action_placeholder}
+    {"Usart one wire", usart_one_wire_test},
+    {"Usb CDC       ", action_placeholder},
+    {"Giroscopio    ", teste_Giroscopio},
+    {"Acelerometro  ", FXOS_8700CQ},
+    {"Sensor Light  ", action_placeholder},
+    {"Push Buttons  ", action_placeholder},
+    {"Led RGB       ", action_placeholder},
+    {"RTC           ", action_placeholder},
+    {"Cryptografia  ", action_placeholder},
+    {"Crc           ", action_placeholder},
+    {"Rng           ", action_placeholder},
+    {"Ssd1306       ", action_placeholder},
+    {"Diagnostico   ", action_placeholder},
+    {"Economia Eng  ", action_placeholder},
+    {"Contraste     ", action_placeholder},
+    {"Sair          ", action_placeholder}
 };
 
 // Variáveis de controle do Menu
@@ -85,45 +85,6 @@ volatile int32_t last_encoder_counter = 0;
 /*******************************************************************************
  * Code
  ******************************************************************************/
-
-void LPUART_EnableHalfDuplex(LPUART_Type* base)
-{
-    /* Enable Single-Wire mode: TXDIR will now dictate pin state */
-    base->CTRL |= LPUART_CTRL_LOOPS_MASK; // Enable loop mode
-    base->CTRL |= LPUART_CTRL_RSRC_MASK;  // Select Single-wire mode (source TX pin)
-
-    /* Set the peripheral default state to Receiver Mode */
-    base->CTRL &= ~LPUART_CTRL_TXDIR_MASK; // TXDIR = 0 (Input/Rx Mode)
-}
-
-
-void LPUART_SetToTransmitMode(LPUART_Type* base)
-{
-    /* 1. Ensure any ongoing receive operations are clear */
-    base->CTRL &= ~LPUART_CTRL_RE_MASK;    // Disable receiver temporarily
-
-
-    /* 2. Switch pin direction to Output */
-    base->CTRL |= LPUART_CTRL_TXDIR_MASK;  // TXDIR = 1 (Output/Tx Mode)
-
-    /* 3. Re-enable transmitter */
-    base->CTRL |= LPUART_CTRL_TE_MASK;     // Ensure TE is set
-}
-
-void LPUART_SetToReceiveMode(LPUART_Type* base)
-{
-    /* 1. Ensure the transmission buffer is completely empty before switching */
-    while (!(base->STAT & LPUART_STAT_TC_MASK))
-    {
-        // Wait for Transmission Complete flag
-    }
-
-    /* 2. Switch pin direction back to Input */
-    base->CTRL &= ~LPUART_CTRL_TXDIR_MASK; // TXDIR = 0 (Input/Rx Mode)
-
-    /* 3. Re-enable receiver */
-    base->CTRL |= LPUART_CTRL_RE_MASK;     // Re-enable RE
-}
 
 static void HW_Timer_init(void)
 {
@@ -160,7 +121,7 @@ void Menu_Display_Update(void) {
         // Define a posição Y inicial (Ex: linha 0 = 0px, linha 1 = 12px para dar espaçamento)
         uint16_t y_pos = i * (FONT_HEIGHT + 1);
 
-        ssd1306_SetCursor(0, (y_pos+15));
+        ssd1306_SetCursor(0, (y_pos + 15));
 
         // Se for o item selecionado, adiciona um indicador visual (Ex: ">" ou cor invertida)
         if (item_index == current_selection) {
@@ -213,15 +174,7 @@ int main(void)
     ssd1306_Init();
 
     //HW_Timer_init();
-    // Apply Half-Duplex Overrides
-    LPUART_EnableHalfDuplex(LPUART0);
-
-    LPUART_SetToTransmitMode(LPUART0);
-    SDK_DelayAtLeastUs(100000, 48000000); // Delay for 100ms (assuming a 48 MHz clock)
-    LPUART_WriteBlocking(LPUART0, txbuff, sizeof(txbuff) - 1);
-    // 2. RECEIVE MODE DATA IN
-    LPUART_SetToReceiveMode(LPUART0);
-
+ 
     ssd1306_Fill(Black);
     memset(MSG, 0xFF, 50);
     sprintf(MSG, "LIB FRDM-K32L2A4S");
@@ -234,26 +187,18 @@ int main(void)
     last_clk_state = GPIO_PinRead(ENCODER_GPIO, CLK_PIN);
     Menu_SetSelection(0);
 
+
+    ADC16_SetChannelConfig(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP, &ADC0_channelsConfig[0]);
+    while (0U == (kADC16_ChannelConversionDoneFlag &
+        ADC16_GetChannelStatusFlags(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP)))
+    {
+    }
+    uint32_t adc_value = ADC16_GetChannelConversionValue(ADC0_PERIPHERAL, ADC0_CH0_CONTROL_GROUP);
+
     /* Add user custom codes below */
     while (1)
     {
-
-        // LPUART_SetToReceiveMode(LPUART0);
-         //SDK_DelayAtLeastUs(100000, 48000000); // Delay for 100ms (assuming a 48 MHz clock)
-         // This will block until a byte is received over the single wire
-        // LPUART_ReadBlocking(LPUART0, &rxbuff[0], 1);
-        // LPUART_SetToTransmitMode(LPUART0);
-         // Process data...
-        // SDK_DelayAtLeastUs(100000, 48000000); // Delay for 100ms (assuming a 48 MHz clock)
-        // if (rxbuff[0] != 0) {
-        //     sprintf(MSG, "RX_byte: 0x%02X", rxbuff[0]);
-        //     ssd1306_SetCursor(2, 10);
-        //     ssd1306_WriteString(MSG, Font_7x10, White);
-        //     ssd1306_UpdateScreen();
-        // }
-        // rxbuff[0] = 0;
         USB_DeviceTasks();
-
 
         // O loop principal fica livre e apenas processa a exibição dos dados
         if (print_flag) {
