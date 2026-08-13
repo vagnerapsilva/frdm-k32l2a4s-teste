@@ -85,40 +85,6 @@ static void MPU_init(void) {
 } */
 
 /***********************************************************************************************************************
- * NVIC0 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'NVIC0'
-- type: 'nvic'
-- mode: 'general'
-- custom_name_enabled: 'false'
-- type_id: 'nvic'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'NVIC0'
-- config_sets:
-  - nvic:
-    - interrupt_table:
-      - 0: []
-      - 1: []
-    - interrupts:
-      - 0:
-        - channelId: 'int_0'
-        - interrupt_t:
-          - IRQn: 'SysTick_IRQn'
-          - enable_interrrupt: 'enabled'
-          - enable_priority: 'false'
-          - priority: '0'
-          - enable_custom_name: 'false'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-
-/* Empty initialization function (commented out)
-static void NVIC0_init(void) {
-} */
-
-/***********************************************************************************************************************
  * LPI2C0 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -359,18 +325,26 @@ static void LPI2C2_init(void) {
 instance:
 - name: 'TPM0'
 - type: 'tpm'
-- mode: 'EdgeAligned'
+- mode: 'QuadratureDecoder'
 - custom_name_enabled: 'false'
 - type_id: 'tpm_2.0.2'
 - functional_group: 'BOARD_InitPeripherals'
 - peripheral: 'TPM0'
 - config_sets:
+  - tpm_quadrature_decoder_mode:
+    - timerModuloVal: '255'
+    - tpm_quad_decoder_mode: 'kTPM_QuadPhaseEncode'
+    - tpm_phase_a_params:
+      - phaseFilterVal: '15'
+      - phasePolarity: 'kTPM_QuadPhaseNormal'
+    - tpm_phase_b_params:
+      - phaseFilterVal: '15'
+      - phasePolarity: 'kTPM_QuadPhaseNormal'
   - tpm_main_config:
     - tpm_config:
       - clockSource: 'kTPM_SystemClock'
       - tpmSrcClkFreq: 'ClocksTool_DefaultInit'
       - prescale: 'kTPM_Prescale_Divide_128'
-      - timerFrequency: '100'
       - useGlobalTimeBase: 'false'
       - triggerSelect: 'kTPM_Trigger_Select_1'
       - triggerSource: 'kTPM_TriggerSource_Internal'
@@ -386,11 +360,9 @@ instance:
       - IRQn: 'TPM0_IRQn'
       - enable_interrrupt: 'enabled'
       - enable_priority: 'false'
-      - priority: '0'
+      - priority: '2'
       - enable_custom_name: 'false'
     - EnableTimerInInit: 'true'
-  - tpm_edge_aligned_mode:
-    - tpm_edge_aligned_channels_config: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 const tpm_config_t TPM0_config = {
@@ -405,11 +377,21 @@ const tpm_config_t TPM0_config = {
   .enableStartOnTrigger = false,
   .enablePauseOnTrigger = false
 };
+const tpm_phase_params_t TPM0_phaseAParams = { 
+  .phaseFilterVal = 15UL,
+  .phasePolarity = kTPM_QuadPhaseNormal
+
+};
+const tpm_phase_params_t TPM0_phaseBParams = { 
+  .phaseFilterVal = 15UL,
+  .phasePolarity = kTPM_QuadPhaseNormal
+
+};
 
 static void TPM0_init(void) {
   TPM_Init(TPM0_PERIPHERAL, &TPM0_config);
-  TPM_SetTimerPeriod(TPM0_PERIPHERAL, ((TPM0_CLOCK_SOURCE/ (1U << (TPM0_PERIPHERAL->SC & TPM_SC_PS_MASK))) / 100) + 1);
-  TPM_EnableInterrupts(TPM0_PERIPHERAL, kTPM_TimeOverflowInterruptEnable);
+  TPM_SetTimerPeriod(TPM0_PERIPHERAL, 255);
+  TPM_SetupQuadDecode(TPM0_PERIPHERAL, &TPM0_phaseAParams, &TPM0_phaseBParams, kTPM_QuadPhaseEncode);
   /* Enable interrupt TPM0_IRQN request in the NVIC */
   EnableIRQ(TPM0_IRQN);
   TPM_StartTimer(TPM0_PERIPHERAL, kTPM_SystemClock);
@@ -514,7 +496,7 @@ instance:
       - clockSource: 'clk_32khz'
       - clockSourceFreq: 'ClocksTool_DefaultInit'
     - rtc_config:
-      - updateMode: 'true'
+      - updateMode: 'false'
       - supervisorAccess: 'false'
       - compensationIntervalInt: '1'
       - compensationTimeInt: '0'
@@ -553,7 +535,7 @@ instance:
 /* clang-format on */
 const rtc_config_t RTC_config = {
   .wakeupSelect = false,
-  .updateMode = true,
+  .updateMode = false,
   .supervisorAccess = false,
   .compensationInterval = 0x0U,
   .compensationTime = 0x0U
@@ -653,12 +635,6 @@ static void USB0_init(void) {
 /***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
-static void BOARD_InitPeripherals_CommonPostInit(void)
-{
-  /* Enable interrupt INT_0_IRQN request in the NVIC */
-  EnableIRQ(INT_0_IRQN);
-}
-
 void BOARD_InitPeripherals(void)
 {
   /* Initialize components */
@@ -669,8 +645,6 @@ void BOARD_InitPeripherals(void)
   ADC0_init();
   RTC_init();
   USB0_init();
-  /* Common post-initialization */
-  BOARD_InitPeripherals_CommonPostInit();
 }
 
 /***********************************************************************************************************************

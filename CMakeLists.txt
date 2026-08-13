@@ -77,6 +77,8 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/usart/src/usart.c"
 "${ProjDirPath}/light_sensor/src/light_sensor.c"
 "${ProjDirPath}/light_sensor/inc/light_sensor.h"
+"${ProjDirPath}/rtc/inc/rtc.h"
+"${ProjDirPath}/rtc/src/rtc.c"
 
 )
 
@@ -94,6 +96,7 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/encoder/inc"
 "${ProjDirPath}/usart/inc"
 "${ProjDirPath}/light_sensor/inc"
+"${ProjDirPath}/rtc/inc"
 
 )
 

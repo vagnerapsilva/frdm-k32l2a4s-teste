@@ -140,52 +140,6 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_SW_PIN_PIN_MASK (1U << 17U)              /*!<@brief PORT pin mask */
                                                                 /* @} */
 
-/*! @name PORTA16 (number 46), J3[11]
-  @{ */
-/* Routed pin properties */
-#define BOARD_INITPINS_CLK_PIN_PERIPHERAL GPIOA                  /*!<@brief Peripheral name */
-#define BOARD_INITPINS_CLK_PIN_SIGNAL GPIO                       /*!<@brief Signal name */
-#define BOARD_INITPINS_CLK_PIN_CHANNEL 16                        /*!<@brief Signal channel */
-#define BOARD_INITPINS_CLK_PIN_PIN_NAME PTA16                    /*!<@brief Routed pin name */
-#define BOARD_INITPINS_CLK_PIN_LABEL "J3[11]"                    /*!<@brief Label */
-#define BOARD_INITPINS_CLK_PIN_NAME "CLK_PIN"                    /*!<@brief Identifier */
-#define BOARD_INITPINS_CLK_PIN_DIRECTION kPIN_MUX_DirectionInput /*!<@brief Direction */
-
-/* Symbols to be used with GPIO driver */
-#define BOARD_INITPINS_CLK_PIN_FGPIO FGPIOA                      /*!<@brief FGPIO peripheral base pointer */
-#define BOARD_INITPINS_CLK_PIN_GPIO GPIOA                        /*!<@brief GPIO peripheral base pointer */
-#define BOARD_INITPINS_CLK_PIN_GPIO_PIN 16U                      /*!<@brief GPIO pin number */
-#define BOARD_INITPINS_CLK_PIN_GPIO_PIN_MASK (1U << 16U)         /*!<@brief GPIO pin mask */
-
-/* Symbols to be used with PORT driver */
-#define BOARD_INITPINS_CLK_PIN_PORT PORTA                        /*!<@brief PORT peripheral base pointer */
-#define BOARD_INITPINS_CLK_PIN_PIN 16U                           /*!<@brief PORT pin number */
-#define BOARD_INITPINS_CLK_PIN_PIN_MASK (1U << 16U)              /*!<@brief PORT pin mask */
-                                                                 /* @} */
-
-/*! @name PORTA15 (number 45), J3[9]
-  @{ */
-/* Routed pin properties */
-#define BOARD_INITPINS_DT_PIN_PERIPHERAL GPIOA                  /*!<@brief Peripheral name */
-#define BOARD_INITPINS_DT_PIN_SIGNAL GPIO                       /*!<@brief Signal name */
-#define BOARD_INITPINS_DT_PIN_CHANNEL 15                        /*!<@brief Signal channel */
-#define BOARD_INITPINS_DT_PIN_PIN_NAME PTA15                    /*!<@brief Routed pin name */
-#define BOARD_INITPINS_DT_PIN_LABEL "J3[9]"                     /*!<@brief Label */
-#define BOARD_INITPINS_DT_PIN_NAME "DT_PIN"                     /*!<@brief Identifier */
-#define BOARD_INITPINS_DT_PIN_DIRECTION kPIN_MUX_DirectionInput /*!<@brief Direction */
-
-/* Symbols to be used with GPIO driver */
-#define BOARD_INITPINS_DT_PIN_FGPIO FGPIOA                      /*!<@brief FGPIO peripheral base pointer */
-#define BOARD_INITPINS_DT_PIN_GPIO GPIOA                        /*!<@brief GPIO peripheral base pointer */
-#define BOARD_INITPINS_DT_PIN_GPIO_PIN 15U                      /*!<@brief GPIO pin number */
-#define BOARD_INITPINS_DT_PIN_GPIO_PIN_MASK (1U << 15U)         /*!<@brief GPIO pin mask */
-
-/* Symbols to be used with PORT driver */
-#define BOARD_INITPINS_DT_PIN_PORT PORTA                        /*!<@brief PORT peripheral base pointer */
-#define BOARD_INITPINS_DT_PIN_PIN 15U                           /*!<@brief PORT pin number */
-#define BOARD_INITPINS_DT_PIN_PIN_MASK (1U << 15U)              /*!<@brief PORT pin mask */
-                                                                /* @} */
-
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

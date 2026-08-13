@@ -33,10 +33,6 @@ extern "C" {
  * Definitions
  **********************************************************************************************************************/
 /* Definitions for BOARD_InitPeripherals functional group */
-/* NVIC0 interrupt vector ID (number). */
-#define INT_0_IRQN SysTick_IRQn
-/* NVIC0 interrupt handler identifier. */
-#define INT_0_IRQHANDLER SysTick_Handler
 /* BOARD_InitPeripherals defines for LPI2C0 */
 /* Definition of peripheral ID */
 #define LPI2C0_PERIPHERAL LPI2C0
@@ -62,7 +58,7 @@ extern "C" {
 /* Definition of peripheral ID */
 #define TPM0_PERIPHERAL TPM0
 /* Definition of the clock source frequency */
-#define TPM0_CLOCK_SOURCE 4000000UL
+#define TPM0_CLOCK_SOURCE 24000000UL
 /* TPM0 interrupt vector ID (number). */
 #define TPM0_IRQN TPM0_IRQn
 /* TPM0 interrupt handler identifier. */

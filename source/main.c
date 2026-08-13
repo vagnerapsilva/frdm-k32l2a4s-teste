@@ -25,6 +25,7 @@
 #include "fxas_21002c.h"
 #include "fxos_8700cq.h"
 #include "light_sensor.h"
+#include "rtc.h"
 #include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
 #include "usart.h" // Driver do USART
 #include <stdio.h>
@@ -67,7 +68,7 @@ MenuItem menu[NUM_ITEMS] = {
     {"Light Sensor  ", light_sensor_test},
     {"Push Buttons  ", action_placeholder},
     {"Led RGB       ", action_placeholder},
-    {"RTC           ", action_placeholder},
+    {"RTC           ", menu_data_hora},
     {"Cryptografia  ", action_placeholder},
     {"Crc           ", action_placeholder},
     {"Rng           ", action_placeholder},
@@ -144,10 +145,10 @@ void Menu_Display_Update(void) {
  */
 void Menu_SetSelection(int16_t new_selection) {
     if (new_selection < 0) {
-        new_selection = 0;
+        new_selection = 15;
     }
     else if (new_selection >= NUM_ITEMS) {
-        new_selection = NUM_ITEMS - 1;
+        new_selection = 0;//NUM_ITEMS - 1;
     }
 
     current_selection = new_selection;
@@ -175,7 +176,7 @@ int main(void)
     ssd1306_Init();
 
     //HW_Timer_init();
- 
+
     ssd1306_Fill(Black);
     memset(MSG, 0xFF, 50);
     sprintf(MSG, "LIB FRDM-K32L2A4S");
@@ -183,42 +184,42 @@ int main(void)
     ssd1306_WriteString(MSG, Font_7x10, White);
     ssd1306_UpdateScreen();
 
+    //Init_Timer_1ms();
     encoder_counter = 0;
 
-    last_clk_state = GPIO_PinRead(ENCODER_GPIO, CLK_PIN);
     Menu_SetSelection(0);
-    rtc_datetime_t date;
-    RTC_GetDatetime(RTC, &date);
+
+
     /* Add user custom codes below */
     while (1)
     {
         USB_DeviceTasks();
 
         // O loop principal fica livre e apenas processa a exibição dos dados
-        if (print_flag) {
-            print_flag = false;
-            int32_t encoder_value = encoder_counter;
-            int32_t delta = encoder_value - last_encoder_counter;
-            if (delta != 0) {
-                Menu_SetSelection(current_selection + delta);
-                last_encoder_counter = encoder_value;
-            }
+        // if (print_flag) {
+        //     print_flag = false;
+        int32_t encoder_value = (TPM0->CNT / 4); // Ajuste para a resolução do encoder
+        int32_t delta = encoder_value - last_encoder_counter;
+        if (delta != 0) {
+            Menu_SetSelection(current_selection + delta);
+            last_encoder_counter = encoder_value;
         }
+        //}
 
         // Verifica o clique do botão físico de forma não-bloqueante
         if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0) {
             // Debounce simples via software para o botão físico
-            for (volatile int i = 0; i < 200000; i++);
+            SDK_DelayAtLeastUs(10000, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
 
             // Confirma se o botão continua pressionado pós-debounce
             if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0) {
+                // Aguarda o usuário soltar o botão para não registrar múltiplos cliques
+                while (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0);
                 //Execute_Menu_Option();
                 if (menu[current_selection].callback != NULL) {
                     menu[current_selection].callback(); // Executa a função associada
                 }
-                // Aguarda o usuário soltar o botão para não registrar múltiplos cliques
-                while (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0);
-                print_flag = true; // Força a atualização do menu após a execução da opção
+               // print_flag = true; // Força a atualização do menu após a execução da opção
             }
         }
 

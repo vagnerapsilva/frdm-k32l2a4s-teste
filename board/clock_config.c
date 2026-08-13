@@ -142,7 +142,7 @@ void BOARD_InitBootClocks(void)
 name: BOARD_BootClockRUN
 called_from_default_init: true
 outputs:
-- {id: Core_clock.outFreq, value: 48 MHz}
+- {id: Core_clock.outFreq, value: 32/3 MHz}
 - {id: FIRCDIV1_CLK.outFreq, value: 48 MHz}
 - {id: FIRCDIV3_CLK.outFreq, value: 48 MHz}
 - {id: LPO_clock.outFreq, value: 1 kHz}
@@ -151,26 +151,34 @@ outputs:
 - {id: PCC0.PCC_USB0_CLK.outFreq, value: 48 MHz}
 - {id: PCC1.PCC_LPI2C0_CLK.outFreq, value: 4 MHz}
 - {id: PCC1.PCC_LPUART0_CLK.outFreq, value: 4 MHz}
-- {id: PCC1.PCC_TPM0_CLK.outFreq, value: 4 MHz}
+- {id: PCC1.PCC_TPM0_CLK.outFreq, value: 24 MHz}
+- {id: PLLDIV3_CLK.outFreq, value: 24 MHz}
 - {id: SIRCDIV3_CLK.outFreq, value: 4 MHz}
 - {id: SIRC_CLK.outFreq, value: 8 MHz}
 - {id: SOSCDIV3_CLK.outFreq, value: 32.768 kHz}
 - {id: SOSCER_CLK.outFreq, value: 32.768 kHz}
 - {id: SOSC_CLK.outFreq, value: 32.768 kHz}
-- {id: Slow_clock.outFreq, value: 24 MHz}
-- {id: System_clock.outFreq, value: 48 MHz}
+- {id: Slow_clock.outFreq, value: 16/3 MHz}
+- {id: System_clock.outFreq, value: 32/3 MHz}
 settings:
+- {id: SCGMode, value: SPLL}
 - {id: PCC0.PCC_LPI2C2_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: PCC1.PCC_LPI2C0_SEL.sel, value: SCG.SIRCDIV3_CLK}
 - {id: PCC1.PCC_LPUART0_SEL.sel, value: SCG.SIRCDIV3_CLK}
-- {id: PCC1.PCC_TPM0_SEL.sel, value: SCG.SIRCDIV3_CLK}
+- {id: PCC1.PCC_TPM0_SEL.sel, value: SCG.PLLDIV3_CLK}
+- {id: SCG.DIVCORE.scale, value: '9'}
 - {id: SCG.FIRCDIV1.scale, value: '1', locked: true}
 - {id: SCG.FIRCDIV3.scale, value: '1', locked: true}
+- {id: SCG.PREDIV.scale, value: '4'}
+- {id: SCG.SCSSEL.sel, value: SCG.SPLL_DIV2_CLK}
 - {id: SCG.SIRCDIV3.scale, value: '2', locked: true}
 - {id: SCG.SOSCDIV3.scale, value: '1', locked: true}
+- {id: SCG.SPLLDIV3.scale, value: '4'}
+- {id: SCG.SPLLSRCSEL.sel, value: SCG.FIRC}
 - {id: SCG_SOSCCFG_OSC_MODE_CFG, value: ModeOscLowPower}
 - {id: SCG_SOSCCSR_SOSCEN_CFG, value: Enabled}
 - {id: SCG_SOSCCSR_SOSCERCLKEN_CFG, value: Enabled}
+- {id: SCG_SPLLCSR_SPLLEN_CFG, value: Enabled}
 sources:
 - {id: PCC0.USBCLK_EXT.outFreq, value: 48 MHz, enabled: true}
 - {id: SCG.SOSC.outFreq, value: 32.768 kHz, enabled: true}
@@ -188,11 +196,11 @@ const scg_sys_clk_config_t g_sysClkConfig_BOARD_BootClockRUN =
         .reserved2 = 0,
         .reserved3 = 0,
 #endif
-        .divCore = kSCG_SysClkDivBy1,             /* Core Clock Divider: divided by 1 */
+        .divCore = kSCG_SysClkDivBy9,             /* Core Clock Divider: divided by 9 */
 #if FSL_CLOCK_DRIVER_VERSION < MAKE_VERSION(2, 1, 1)
         .reserved4 = 0,
 #endif
-        .src = kSCG_SysClkSrcFirc,                /* Fast IRC is selected as System Clock Source */
+        .src = kSCG_SysClkSrcSysPll,              /* System PLL is selected as System Clock Source */
 #if FSL_CLOCK_DRIVER_VERSION < MAKE_VERSION(2, 1, 1)
         .reserved5 = 0,
 #endif
@@ -224,12 +232,12 @@ const scg_firc_config_t g_scgFircConfig_BOARD_BootClockRUN =
     };
 const scg_spll_config_t g_scgSysPllConfig_BOARD_BootClockRUN =
     {
-        .enableMode = SCG_SPLL_DISABLE,           /* System PLL disabled */
+        .enableMode = kSCG_SysPllEnable,          /* Enable SPLL clock */
         .monitorMode = kSCG_SysPllMonitorDisable, /* Monitor disabled */
         .div1 = kSCG_AsyncClkDisable,             /* System PLL Clock Divider 1: Clock output is disabled */
-        .div3 = kSCG_AsyncClkDisable,             /* System PLL Clock Divider 3: Clock output is disabled */
-        .src = kSCG_SysPllSrcSysOsc,              /* System PLL clock source is System OSC */
-        .prediv = 0,                              /* Divided by 1 */
+        .div3 = kSCG_AsyncClkDivBy4,              /* System PLL Clock Divider 3: divided by 4 */
+        .src = kSCG_SysPllSrcFirc,                /* System PLL clock source is Fast IRC */
+        .prediv = 3,                              /* Divided by 4 */
         .mult = 0,                                /* Multiply Factor is 16 */
     };
 /*******************************************************************************
@@ -247,7 +255,9 @@ void BOARD_BootClockRUN(void)
     CLOCK_CONFIG_FircSafeConfig(&g_scgFircConfig_BOARD_BootClockRUN);
     /* Init SIRC. */
     CLOCK_InitSirc(&g_scgSircConfig_BOARD_BootClockRUN);
-    /* Set SCG to FIRC mode. */
+    /* Init SysPll. */
+    CLOCK_InitSysPll(&g_scgSysPllConfig_BOARD_BootClockRUN);
+    /* Set SCG to SPLL mode. */
     CLOCK_SetRunModeSysClkConfig(&g_sysClkConfig_BOARD_BootClockRUN);
     /* Wait for clock source switch finished. */
     do
@@ -261,7 +271,7 @@ void BOARD_BootClockRUN(void)
     /* Set PCC USB0 selection */
     CLOCK_SetIpSrc(kCLOCK_Usbfs0, kCLOCK_IpSrcNoneOrExt);
     /* Set PCC TPM0 selection */
-    CLOCK_SetIpSrc(kCLOCK_Tpm0, kCLOCK_IpSrcSircAsync);
+    CLOCK_SetIpSrc(kCLOCK_Tpm0, kCLOCK_IpSrcSysPllAsync);
     /* Set PCC LPI2C0 selection */
     CLOCK_SetIpSrc(kCLOCK_Lpi2c0, kCLOCK_IpSrcSircAsync);
     /* Set PCC LPUART0 selection */
