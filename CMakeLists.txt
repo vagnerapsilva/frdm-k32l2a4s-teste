@@ -36,6 +36,7 @@ if (NOT DEFINED SdkRootDirPath)
 SET(SdkRootDirPath ${ProjDirPath}/)
 endif()
 
+
 include(${ProjDirPath}/flags.cmake)
 
 include(${ProjDirPath}/config.cmake)
@@ -79,7 +80,9 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/light_sensor/inc/light_sensor.h"
 "${ProjDirPath}/rtc/inc/rtc.h"
 "${ProjDirPath}/rtc/src/rtc.c"
-
+"${ProjDirPath}/mmcau/src/mmcau_api.c"
+"${ProjDirPath}/board/display_lib.c"
+"${ProjDirPath}/board/display_lib.h"
 )
 
 
@@ -97,6 +100,7 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/usart/inc"
 "${ProjDirPath}/light_sensor/inc"
 "${ProjDirPath}/rtc/inc"
+"${ProjDirPath}/mmcau/inc"
 
 )
 

@@ -904,6 +904,7 @@ ${CMAKE_CURRENT_LIST_DIR}/component/uart
 ${CMAKE_CURRENT_LIST_DIR}/device
 ${CMAKE_CURRENT_LIST_DIR}/drivers
 ${CMAKE_CURRENT_LIST_DIR}/source
+${CMAKE_CURRENT_LIST_DIR}/middleware/mmcau
 ${CMAKE_CURRENT_LIST_DIR}/startup
 ${CMAKE_CURRENT_LIST_DIR}/usb
 ${CMAKE_CURRENT_LIST_DIR}/utilities
@@ -1202,4 +1203,5 @@ include_if_use(utility_incbin.K32L2A41A)
 include_if_use(utility_notifier.K32L2A41A)
 include_if_use(utility_shell.K32L2A41A)
 include_if_use(utility_str.K32L2A41A)
+
 

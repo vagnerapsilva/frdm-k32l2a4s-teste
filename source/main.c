@@ -28,6 +28,8 @@
 #include "rtc.h"
 #include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
 #include "usart.h" // Driver do USART
+#include "fsl_mmcau.h"
+#include "mmcau_api.h" // Driver do MMCAU
 #include <stdio.h>
 #include <stdbool.h>
  /*******************************************************************************
@@ -69,7 +71,7 @@ MenuItem menu[NUM_ITEMS] = {
     {"Push Buttons  ", action_placeholder},
     {"Led RGB       ", action_placeholder},
     {"RTC           ", menu_data_hora},
-    {"Cryptografia  ", action_placeholder},
+    {"Cryptografia  ", teste_mmcau},
     {"Crc           ", action_placeholder},
     {"Rng           ", action_placeholder},
     {"Ssd1306       ", action_placeholder},
@@ -88,16 +90,16 @@ volatile int32_t last_encoder_counter = 0;
  * Code
  ******************************************************************************/
 
-static void HW_Timer_init(void)
-{
-    /* Configure the SysTick timer */
-    SysTick_Config(SystemCoreClock / HWTIMER_PERIOD);
-}
+// static void HW_Timer_init(void)
+// {
+//     /* Configure the SysTick timer */
+//     SysTick_Config(SystemCoreClock / HWTIMER_PERIOD);
+// }
 
-void SysTick_Handler(void)
-{
-    SampleEventFlag = 1;
-}
+// void SysTick_Handler(void)
+// {
+//     SampleEventFlag = 1;
+// }
 
 
 
@@ -187,6 +189,8 @@ int main(void)
     //Init_Timer_1ms();
     encoder_counter = 0;
 
+
+
     Menu_SetSelection(0);
 
 
@@ -219,7 +223,7 @@ int main(void)
                 if (menu[current_selection].callback != NULL) {
                     menu[current_selection].callback(); // Executa a função associada
                 }
-               // print_flag = true; // Força a atualização do menu após a execução da opção
+                // print_flag = true; // Força a atualização do menu após a execução da opção
             }
         }
 

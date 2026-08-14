@@ -28,5 +28,5 @@ typedef enum {
 extern void ajustar_rtc(void);
 extern void mostrar_data_hora(void);
 extern void menu_data_hora(void);
-
+extern int32_t ENCODER_LerClique(void);
 #endif /* __RTC_H */
