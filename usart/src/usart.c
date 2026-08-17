@@ -89,16 +89,6 @@ void usart_one_wire_test(void)
     ssd1306_WriteString(MSG, Font_7x10, White);
     ssd1306_UpdateScreen();
 
-    // while (1) {
-    //     // if (print_flag) {
-    //     //     print_flag = false;
-    //     sprintf(MSG, "Encoder: %.6ld", TPM0->CNT);
-    //         ssd1306_SetCursor(2, 25);
-    //         ssd1306_WriteString(MSG, Font_7x10, White);
-    //         ssd1306_UpdateScreen();
-    //     //}
-    // }
-
     LPUART_EnableHalfDuplex(LPUART0);
     LPUART_SetToTransmitMode(LPUART0);
     SDK_DelayAtLeastUs(100000, 48000000); // Delay for 100ms (assuming a 48 MHz clock)

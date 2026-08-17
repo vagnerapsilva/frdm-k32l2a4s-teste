@@ -276,7 +276,7 @@ void FXOS_8700CQ(void)
 
             // Confirma se o botão continua pressionado pós-debounce
             if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0)
-                break; // Sai do loop de teste do giroscópio
+                __NVIC_SystemReset();
         }
     }
 

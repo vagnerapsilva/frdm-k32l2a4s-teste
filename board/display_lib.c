@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <ctype.h>
 #include "display_lib.h"
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
@@ -158,17 +159,17 @@ void display_add_speed(const char* label, float speed)
 /*!
  * @brief Render display buffer to SSD1306 screen
  */
-void display_render(void)
+void display_render(uint8_t* label)
 {
     const uint8_t y_positions[] = { 13, 23, 33, 43, 53 };
     uint16_t visible_start = g_displayBuffer.scroll_start;
     uint8_t line_idx;
 
     ssd1306_Fill(Black);
-
+    //"MMCAU Test"
     /* Draw title */
     ssd1306_SetCursor(0, 0);
-    ssd1306_WriteString("MMCAU Test", Font_7x10, White);
+    ssd1306_WriteString(label, Font_7x10, White);
 
     /* Draw separator */
     ssd1306_Line(0, 12, 127, 12, White);
@@ -231,4 +232,197 @@ void display_print_data(const uint8_t* data, uint32_t length)
         buffer[pos] = '\0';
         display_add_line(buffer);
     }
+}
+
+static uint8_t display_hex_char_to_nibble(uint8_t ch)
+{
+    if (ch >= '0' && ch <= '9')
+    {
+        return (uint8_t)(ch - '0');
+    }
+    if (ch >= 'a' && ch <= 'f')
+    {
+        return (uint8_t)(ch - 'a' + 10U);
+    }
+    if (ch >= 'A' && ch <= 'F')
+    {
+        return (uint8_t)(ch - 'A' + 10U);
+    }
+    return 0U;
+}
+
+static void display_hex_to_chars(const uint8_t* data, uint32_t length, char* output, uint32_t output_size)
+{
+    uint32_t i = 0;
+    uint32_t pos = 0;
+
+    if (output == NULL || output_size == 0U)
+    {
+        return;
+    }
+
+    memset(output, 0, output_size);
+
+    while (i < length && pos + 1U < output_size)
+    {
+        uint8_t current = data[i];
+
+        if (current == '0' && i + 1U < length && data[i + 1U] == 'x')
+        {
+            i += 2U;
+            continue;
+        }
+
+        if (current == ' ' || current == ',' || current == '\n' || current == '\r' || current == '\t' || current == ';' || current == ':' || current == '\0')
+        {
+            i++;
+            continue;
+        }
+
+        if (i + 1U < length && isxdigit((unsigned char)data[i]) && isxdigit((unsigned char)data[i + 1U]))
+        {
+            uint8_t value = (uint8_t)((display_hex_char_to_nibble(data[i]) << 4U) |
+                display_hex_char_to_nibble(data[i + 1U]));
+
+            if (value >= 0x20U && value <= 0x7EU)
+            {
+                output[pos++] = (char)value;
+            }
+            else
+            {
+                output[pos++] = '.';
+            }
+
+            i += 2U;
+            continue;
+        }
+
+        break;
+    }
+
+    output[pos] = '\0';
+}
+
+static uint8_t display_data_looks_like_ascii_hex(const uint8_t* data, uint32_t length)
+{
+    uint32_t i;
+
+    if (data == NULL || length == 0U)
+    {
+        return 0U;
+    }
+
+    for (i = 0; i < length; i++)
+    {
+        if (data[i] == '0' && i + 1U < length && data[i + 1U] == 'x')
+        {
+            i += 1U;
+            continue;
+        }
+
+        if (data[i] == ' ' || data[i] == ',' || data[i] == '\n' || data[i] == '\r' || data[i] == '\t' || data[i] == ';' || data[i] == ':' || data[i] == '\0')
+        {
+            continue;
+        }
+
+        if ((i + 1U < length) && isxdigit((unsigned char)data[i]) && isxdigit((unsigned char)data[i + 1U]))
+        {
+            i += 1U;
+            continue;
+        }
+
+        return 0U;
+    }
+
+    return 1U;
+}
+
+void display_show_hex_as_chars(const char* label, const uint8_t* data, uint32_t length)
+{
+    char converted[DISPLAY_LINE_LENGTH + 1U];
+    char line[DISPLAY_LINE_LENGTH + 1U];
+    uint32_t i;
+    uint32_t label_len = 0U;
+    uint32_t data_len = 0U;
+    uint32_t chunk_size = DISPLAY_LINE_LENGTH;
+
+    if (data == NULL)
+    {
+        return;
+    }
+
+    memset(converted, 0, sizeof(converted));
+    memset(line, 0, sizeof(line));
+
+    if (display_data_looks_like_ascii_hex(data, length))
+    {
+        display_hex_to_chars(data, length, converted, sizeof(converted));
+    }
+    else
+    {
+        for (i = 0; i < length && i < ((uint32_t)sizeof(converted) / 2U); i++)
+        {
+            snprintf(&converted[i * 2U], sizeof(converted) - (i * 2U), "%02X", data[i]);
+        }
+        converted[sizeof(converted) - 1U] = '\0';
+    }
+
+    data_len = strlen(converted);
+
+    if (label != NULL && label[0] != '\0')
+    {
+        label_len = strlen(label);
+        if (label_len >= DISPLAY_LINE_LENGTH)
+        {
+            display_add_line(label);
+            label_len = 0U;
+        }
+        else
+        {
+            chunk_size = DISPLAY_LINE_LENGTH - label_len;
+        }
+    }
+
+    if (data_len > 0U)
+    {
+        uint32_t offset = 0U;
+
+        while (offset < data_len)
+        {
+            uint32_t take = data_len - offset;
+            if (take > chunk_size)
+            {
+                take = chunk_size;
+            }
+
+            memset(line, 0, sizeof(line));
+            if (offset == 0U && label_len > 0U)
+            {
+                snprintf(line, sizeof(line), "%s%.*s", label, (int)take, &converted[offset]);
+            }
+            else
+            {
+                snprintf(line, sizeof(line), "%.*s", (int)take, &converted[offset]);
+            }
+
+            if (line[0] != '\0')
+            {
+                display_add_line(line);
+            }
+
+            offset += take;
+            chunk_size = DISPLAY_LINE_LENGTH;
+            label_len = 0U;
+        }
+    }
+    display_render("MMCAU Test");
+    //isplay_render();
+}
+
+/*!
+ * @brief Show encrypted data on display in hexadecimal format.
+ */
+void display_show_encrypted_hex(const char* label, const uint8_t* data, uint32_t length)
+{
+    display_show_hex_as_chars(label, data, length);
 }

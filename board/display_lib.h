@@ -60,7 +60,7 @@ void display_add_speed(const char* label, float speed);
 /*!
  * @brief Render display buffer to SSD1306 screen
  */
-void display_render(void);
+void display_render(uint8_t* label);
 
 /*!
  * @brief Print data bytes to display with formatting
@@ -68,5 +68,21 @@ void display_render(void);
  * @param length Number of bytes to print
  */
 void display_print_data(const uint8_t* data, uint32_t length);
+
+/*!
+ * @brief Convert hexadecimal payload to printable characters and show it on the display.
+ * @param label Optional text shown before the payload.
+ * @param data Pointer to hex-encoded data.
+ * @param length Number of bytes to convert.
+ */
+void display_show_hex_as_chars(const char* label, const uint8_t* data, uint32_t length);
+
+/*!
+ * @brief Show encrypted data on display in hexadecimal format.
+ * @param label Optional text shown before the hex payload.
+ * @param data Pointer to encrypted data.
+ * @param length Number of bytes to display.
+ */
+void display_show_encrypted_hex(const char* label, const uint8_t* data, uint32_t length);
 
 #endif /* __DISPLAY_LIB_H__ */

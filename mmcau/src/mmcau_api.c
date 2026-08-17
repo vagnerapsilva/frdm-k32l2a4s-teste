@@ -734,8 +734,8 @@ static void mmcau_example_task(void)
     /* Display test info */
     display_add_line("Input string:");
     display_print_data(&g_testFull[0], length);
-    display_render();
-    while(!ENCODER_LerClique());
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
     /***************************************************/
     /******* FIRST PART USING AES-CBC method *********/
@@ -743,7 +743,7 @@ static void mmcau_example_task(void)
     display_clear();
     display_add_line("AES-128-CBC");
     display_add_line("Encrypting...");
-    display_render();
+    display_render("MMCAU Test");
     timeBefore = time_get_ms();
     /*   ENCRYPTION   */
     /* Call AES_cbc encryption */
@@ -753,7 +753,7 @@ static void mmcau_example_task(void)
         display_clear();
         display_add_line("AES-128 Enc");
         display_add_line("Failed!");
-        display_render();
+        display_render("MMCAU Test");
         return;
     }
     timeAfter = time_get_ms();
@@ -761,8 +761,7 @@ static void mmcau_example_task(void)
     display_clear();
     display_add_line("AES-128 Enc");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_print_data(g_output, 5);
-    display_render();
+    display_show_encrypted_hex("->", g_output, 16);
 
     while (!ENCODER_LerClique());
 
@@ -770,343 +769,155 @@ static void mmcau_example_task(void)
     display_clear();
     display_add_line("AES-128-CBC");
     display_add_line("Decrypting...");
-    display_render();
+    display_render("MMCAU Test");
 
     /* Call AES_cbc decryption */
-    cycles = CYCLES_FOR_THROUGHPUT;
     timeBefore = time_get_ms();
-    while (cycles)
+
+    status = mmcau_decrypt_aes_cbc(g_aesKey128, AES128, g_output, g_result, length, g_aesIV);
+    if (status != MMCAU_OK)
     {
-        status = mmcau_decrypt_aes_cbc(g_aesKey128, AES128, g_output, g_result, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-128 Dec");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        cycles--;
+        display_clear();
+        display_add_line("AES-128 Dec");
+        display_add_line("Failed!");
+        display_render("MMCAU Test");
+        return;
     }
+
+
     timeAfter = time_get_ms();
 
     /* Display decryption speed and result */
     display_clear();
     display_add_line("AES-128 Dec");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_add_line("Decrypted:");
     display_print_data(g_result, length);
-    display_render();
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
-#if defined(DEMO_MMCAU_PASS_RATE)
-    time_config(true);
-    uint32_t CountPass = 0U;
-    uint32_t CountFail = 0U;
-    float PassRate = 0.0;
 
-    /* Call AES_cbc encryption */
-    cycles = CYCLES_FOR_PASSRATE;
-
-    while (cycles)
-    {
-        status = mmcau_encrypt_aes_cbc(g_aesKey128, AES128, g_testFull, g_output, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-128 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(g_aes128_cipher, g_output, length) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        status = mmcau_decrypt_aes_cbc(g_aesKey128, AES128, g_output, g_result, length, g_aesIV);
-
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-128 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(g_testFull, g_result, length) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        PassRate = (float)(CountPass * 100.0f) / ((float)(CountPass + CountFail));
-        cycles--;
-    }
-    time_config(false);
-
-    display_clear();
-    display_add_line("AES-128");
-    display_add_line("Pass Rate:");
-    display_add_line("%.1f%%", PassRate);
-    display_render();
-#endif /* DEMO_MMCAU_PASS_RATE */
 
     /* AES-192 */
     display_clear();
     display_add_line("AES-192-CBC");
     display_add_line("Encrypting...");
-    display_render();
+    display_render("MMCAU Test");
 
     /*   ENCRYPTION   */
     /* Call AES_cbc encryption */
-    cycles = CYCLES_FOR_THROUGHPUT;
+
     timeBefore = time_get_ms();
-    while (cycles)
+
+    status = mmcau_encrypt_aes_cbc(g_aesKey192, AES192, g_testFull, g_output, length, g_aesIV);
+    if (status != MMCAU_OK)
     {
-        status = mmcau_encrypt_aes_cbc(g_aesKey192, AES192, g_testFull, g_output, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-192 Enc");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        cycles--;
+        display_clear();
+        display_add_line("AES-192 Enc");
+        display_add_line("Failed!");
+        display_render("MMCAU Test");
+        return;
     }
+
     timeAfter = time_get_ms();
 
     /* Display encryption speed */
     display_clear();
     display_add_line("AES-192 Enc");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_render();
+    display_show_encrypted_hex("->", g_output, 16);
+    //    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
     /*   DECRYPTION   */
     display_clear();
     display_add_line("AES-192-CBC");
     display_add_line("Decrypting...");
-    display_render();
+    display_render("MMCAU Test");
 
     /* Call AES_cbc decryption */
-    cycles = CYCLES_FOR_THROUGHPUT;
+
     timeBefore = time_get_ms();
-    while (cycles)
+
+    status = mmcau_decrypt_aes_cbc(g_aesKey192, AES192, g_output, g_result, length, g_aesIV);
+    if (status != MMCAU_OK)
     {
-        status = mmcau_decrypt_aes_cbc(g_aesKey192, AES192, g_output, g_result, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-192 Dec");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        cycles--;
+        display_clear();
+        display_add_line("AES-192 Dec");
+        display_add_line("Failed!");
+        display_render("MMCAU Test");
+        return;
     }
+
     timeAfter = time_get_ms();
 
     /* Display decryption speed and result */
     display_clear();
     display_add_line("AES-192 Dec");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_add_line("Decrypted:");
     display_print_data(g_result, length);
-    display_render();
-
-#if defined(DEMO_MMCAU_PASS_RATE)
-    time_config(true);
-    CountPass = 0U;
-    CountFail = 0U;
-    PassRate = 0.0;
-
-    /* Call AES_cbc encryption */
-    cycles = CYCLES_FOR_PASSRATE;
-
-    while (cycles)
-    {
-        status = mmcau_encrypt_aes_cbc(g_aesKey192, AES192, g_testFull, g_output, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-192 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(g_aes192_cipher, g_output, length) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        status = mmcau_decrypt_aes_cbc(g_aesKey192, AES192, g_output, g_result, length, g_aesIV);
-
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-192 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(g_testFull, g_result, length) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        PassRate = (float)(CountPass * 100.0f) / ((float)(CountPass + CountFail));
-        cycles--;
-    }
-    time_config(false);
-
-    display_clear();
-    display_add_line("AES-192");
-    display_add_line("Pass Rate:");
-    display_add_line("%.1f%%", PassRate);
-    display_render();
-#endif /* DEMO_MMCAU_PASS_RATE */
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
     /* AES-256 */
     display_clear();
     display_add_line("AES-256-CBC");
     display_add_line("Encrypting...");
-    display_render();
+    display_render("MMCAU Test");
 
     /*   ENCRYPTION   */
     /* Call AES_cbc encryption */
-    cycles = CYCLES_FOR_THROUGHPUT;
+
     timeBefore = time_get_ms();
-    while (cycles)
+
+    status = mmcau_encrypt_aes_cbc(g_aesKey256, AES256, g_testFull, g_output, length, g_aesIV);
+    if (status != MMCAU_OK)
     {
-        status = mmcau_encrypt_aes_cbc(g_aesKey256, AES256, g_testFull, g_output, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-256 Enc");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        cycles--;
+        display_clear();
+        display_add_line("AES-256 Enc");
+        display_add_line("Failed!");
+        display_render("MMCAU Test");
+        return;
     }
+
     timeAfter = time_get_ms();
 
     /* Display encryption speed */
     display_clear();
     display_add_line("AES-256 Enc");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_render();
-
+    display_show_encrypted_hex("->", g_output, 16);
+    //    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
     /*   DECRYPTION   */
     display_clear();
     display_add_line("AES-256-CBC");
     display_add_line("Decrypting...");
-    display_render();
+    display_render("MMCAU Test");
 
     /* Call AES_cbc decryption */
-    cycles = CYCLES_FOR_THROUGHPUT;
+
     timeBefore = time_get_ms();
-    while (cycles)
+
+    status = mmcau_decrypt_aes_cbc(g_aesKey256, AES256, g_output, g_result, length, g_aesIV);
+    if (status != MMCAU_OK)
     {
-        status = mmcau_decrypt_aes_cbc(g_aesKey256, AES256, g_output, g_result, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-256 Dec");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        cycles--;
+        display_clear();
+        display_add_line("AES-256 Dec");
+        display_add_line("Failed!");
+        display_render("MMCAU Test");
+        return;
     }
+
     timeAfter = time_get_ms();
 
     /* Display decryption speed and result */
     display_clear();
     display_add_line("AES-256 Dec");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_add_line("Decrypted:");
     display_print_data(g_result, length);
-    display_render();
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
-#if defined(DEMO_MMCAU_PASS_RATE)
-    /* Call AES_cbc encryption */
-    time_config(true);
-    CountPass = 0U;
-    CountFail = 0U;
-    PassRate = 0.0;
-
-    cycles = CYCLES_FOR_PASSRATE;
-    while (cycles)
-    {
-        /* AES-CBC 256 */
-        status = mmcau_encrypt_aes_cbc(g_aesKey256, AES256, g_testFull, g_output, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-256 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(g_aes256_cipher, g_output, length) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        status = mmcau_decrypt_aes_cbc(g_aesKey256, AES256, g_output, g_result, length, g_aesIV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("AES-256 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        if (memcmp(g_testFull, g_result, length) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        PassRate = (float)(CountPass * 100.0f) / ((float)(CountPass + CountFail));
-        cycles--;
-    }
-    time_config(false);
-
-    display_clear();
-    display_add_line("AES-256");
-    display_add_line("Pass Rate:");
-    display_add_line("%.1f%%", PassRate);
-    display_render();
-#endif /* DEMO_MMCAU_PASS_RATE */
 
     /***************************************************/
     /******* SECOND PART USING DES3-CBC method ********/
@@ -1116,124 +927,62 @@ static void mmcau_example_task(void)
     display_clear();
     display_add_line("DES3-CBC");
     display_add_line("Encrypting...");
-    display_render();
+    display_render("MMCAU Test");
 
     /*   ENCRYPTION   */
     /* Call DES3_cbc encryption */
-    cycles = CYCLES_FOR_THROUGHPUT;
+
     timeBefore = time_get_ms();
-    while (cycles)
+
+    status = mmcau_encrypt_3des_cbc(g_des3Key, g_testFull, g_output, length, g_des3IV);
+    if (status != MMCAU_OK)
     {
-        status = mmcau_encrypt_3des_cbc(g_des3Key, g_testFull, g_output, length, g_des3IV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("DES3 Enc");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        cycles--;
+        display_clear();
+        display_add_line("DES3 Enc");
+        display_add_line("Failed!");
+        display_render("MMCAU Test");
+        return;
     }
+
     timeAfter = time_get_ms();
 
     /* Display encryption speed */
     display_clear();
     display_add_line("DES3 Enc");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_render();
+    display_show_encrypted_hex("->", g_output, 16);
+    //    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
     /*   DECRYPTION   */
     display_clear();
     display_add_line("DES3-CBC");
     display_add_line("Decrypting...");
-    display_render();
+    display_render("MMCAU Test");
 
     /* Call DES3_cbc decryption */
-    cycles = CYCLES_FOR_THROUGHPUT;
+
     timeBefore = time_get_ms();
-    while (cycles)
+
+    status = mmcau_decrypt_3des_cbc(g_des3Key, g_output, g_result, length, g_des3IV);
+    if (status != MMCAU_OK)
     {
-        status = mmcau_decrypt_3des_cbc(g_des3Key, g_output, g_result, length, g_des3IV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("DES3 Dec");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        cycles--;
+        display_clear();
+        display_add_line("DES3 Dec");
+        display_add_line("Failed!");
+        display_render("MMCAU Test");
+        return;
     }
+
     timeAfter = time_get_ms();
 
     /* Display decryption speed and result */
     display_clear();
     display_add_line("DES3 Dec");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_add_line("Decrypted:");
     display_print_data(g_result, length);
-    display_render();
-
-#if defined(DEMO_MMCAU_PASS_RATE)
-    /* Call DES3  */
-    time_config(true);
-    CountPass = 0U;
-    CountFail = 0U;
-    PassRate = 0.0;
-
-    cycles = CYCLES_FOR_PASSRATE;
-    while (cycles)
-    {
-        status = mmcau_encrypt_3des_cbc(g_des3Key, g_testFull, g_output, length, g_des3IV);
-        if (status != kStatus_Success)
-        {
-            display_clear();
-            display_add_line("DES3 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(g_output, g_des3Expected, sizeof(g_des3Expected)) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        status = mmcau_decrypt_3des_cbc(g_des3Key, g_output, g_result, length, g_des3IV);
-        if (status != MMCAU_OK)
-        {
-            display_clear();
-            display_add_line("DES3 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-        if (memcmp(g_testFull, g_result, length) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        PassRate = (float)(CountPass * 100.0f) / ((float)(CountPass + CountFail));
-        cycles--;
-    }
-
-    time_config(false);
-
-    display_clear();
-    display_add_line("DES3");
-    display_add_line("Pass Rate:");
-    display_add_line("%.1f%%", PassRate);
-    display_render();
-#endif /* DEMO_MMCAU_PASS_RATE */
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
     /***************************************************/
     /******* THIRD PART USES HASH FUNCTIONALITY ******/
@@ -1244,188 +993,59 @@ static void mmcau_example_task(void)
     display_clear();
     display_add_line("HASH Tests");
     display_add_line("Computing...");
-    display_render();
+    display_render("MMCAU Test");
 
     /*calculate number of 512-bit blocks present in the message*/
     /*multiple of CRYPTO_BLOCK_LENGTH bytes alway because of padding*/
     blocks = length / CRYPTO_BLOCK_LENGTH;
 
     /*Compute SHA1 */
-    cycles = CYCLES_FOR_THROUGHPUT;
     timeBefore = time_get_ms();
-    while (cycles)
-    {
-        MMCAU_SHA1_Update(g_testSha, blocks, resultSha1);
-        cycles--;
-    }
+    MMCAU_SHA1_Update(g_testSha, blocks, resultSha1);
     timeAfter = time_get_ms();
 
     display_clear();
     display_add_line("SHA1");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_render();
-
-#if defined(DEMO_MMCAU_PASS_RATE)
-    /* Call SHA1  */
-    time_config(true);
-    CountPass = 0U;
-    CountFail = 0U;
-    PassRate = 0.0;
-
-    cycles = CYCLES_FOR_PASSRATE;
-    while (cycles)
-    {
-        MMCAU_SHA1_Update(g_testSha, blocks, resultSha1);
-        if (status != kStatus_Success)
-        {
-            display_clear();
-            display_add_line("SHA1 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(resultSha1, g_Sha1_expected, sizeof(g_Sha1_expected)) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        PassRate = (float)(CountPass * 100.0f) / ((float)(CountPass + CountFail));
-        cycles--;
-    }
-    time_config(false);
-
-    display_clear();
-    display_add_line("SHA1");
-    display_add_line("Pass Rate:");
-    display_add_line("%.1f%%", PassRate);
-    display_render();
-#endif /* DEMO_MMCAU_PASS_RATE */
+    display_show_encrypted_hex("->", (uint8_t*)resultSha1, SHA1_RESULT_LENGTH);
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
     /*Compute SHA256 */
-    cycles = CYCLES_FOR_THROUGHPUT;
     timeBefore = time_get_ms();
-    while (cycles)
-    {
-        MMCAU_SHA256_Update(g_testSha, blocks, resultSha256);
-        cycles--;
-    }
+    MMCAU_SHA256_Update(g_testSha, blocks, resultSha256);
     timeAfter = time_get_ms();
 
     display_clear();
     display_add_line("SHA256");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_render();
-
-#if defined(DEMO_MMCAU_PASS_RATE)
-    /* Call SHA256 */
-    time_config(true);
-    CountPass = 0U;
-    CountFail = 0U;
-    PassRate = 0.0;
-
-    cycles = CYCLES_FOR_PASSRATE;
-    while (cycles)
-    {
-        MMCAU_SHA256_Update(g_testSha, blocks, resultSha256);
-        if (status != kStatus_Success)
-        {
-            display_clear();
-            display_add_line("SHA256 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(resultSha256, g_Sha256_expected, sizeof(g_Sha256_expected)) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        PassRate = (float)(CountPass * 100.0f) / ((float)(CountPass + CountFail));
-        cycles--;
-    }
-    time_config(false);
-
-    display_clear();
-    display_add_line("SHA256");
-    display_add_line("Pass Rate:");
-    display_add_line("%.1f%%", PassRate);
-    display_render();
-#endif /* DEMO_MMCAU_PASS_RATE */
+    display_show_encrypted_hex("->", (uint8_t*)resultSha256, SHA256_RESULT_LENGTH);
+    //    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
     /*Compute MD5 */
     length = sizeof(g_testMd5);
     blocks = length / CRYPTO_BLOCK_LENGTH;
 
-    cycles = CYCLES_FOR_THROUGHPUT;
     timeBefore = time_get_ms();
-    while (cycles)
-    {
-        MMCAU_MD5_Update(g_testMd5, blocks, resultMd5);
-        cycles--;
-    }
+    MMCAU_MD5_Update(g_testMd5, blocks, resultMd5);
+
     timeAfter = time_get_ms();
 
     display_clear();
     display_add_line("MD5");
     display_add_speed("Speed:", mmcau_get_throughput(timeAfter - timeBefore, CYCLES_FOR_THROUGHPUT * length));
-    display_render();
+    display_show_encrypted_hex("->", (uint8_t*)resultMd5, MD5_RESULT_LENGTH);
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 
-#if defined(DEMO_MMCAU_PASS_RATE)
-    /* Call MD5 */
-    time_config(true);
-    CountPass = 0U;
-    CountFail = 0U;
-    PassRate = 0.0;
-
-    cycles = CYCLES_FOR_PASSRATE;
-    while (cycles)
-    {
-        status = MMCAU_MD5_Update(g_testMd5, blocks, resultMd5);
-        if (status != kStatus_Success)
-        {
-            display_clear();
-            display_add_line("MD5 Rate");
-            display_add_line("Failed!");
-            display_render();
-            return;
-        }
-
-        if (memcmp(resultMd5, g_testMd5Expected, sizeof(g_testMd5Expected)) == 0)
-        {
-            CountPass++;
-        }
-        else
-        {
-            CountFail++;
-        }
-
-        PassRate = (float)(CountPass * 100.0f) / ((float)(CountPass + CountFail));
-        cycles--;
-    }
-    time_config(false);
-
-    display_clear();
-    display_add_line("MD5");
-    display_add_line("Pass Rate:");
-    display_add_line("%.1f%%", PassRate);
-    display_render();
-#endif /* DEMO_MMCAU_PASS_RATE */
 
     /* Display completion message */
     display_clear();
     display_add_line("Testing");
     display_add_line("Complete!");
-    display_render();
+    display_render("MMCAU Test");
+    while (!ENCODER_LerClique());
 }
 
 /*!

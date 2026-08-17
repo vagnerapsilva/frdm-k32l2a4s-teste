@@ -58,11 +58,17 @@ extern "C" {
 /* Definition of peripheral ID */
 #define TPM0_PERIPHERAL TPM0
 /* Definition of the clock source frequency */
-#define TPM0_CLOCK_SOURCE 24000000UL
+#define TPM0_CLOCK_SOURCE 4000000UL
 /* TPM0 interrupt vector ID (number). */
 #define TPM0_IRQN TPM0_IRQn
 /* TPM0 interrupt handler identifier. */
 #define TPM0_IRQHANDLER TPM0_IRQHandler
+/* Definition of TPM0 channel/pair number 2 on Edge-aligned PWM */
+#define TPM0_LEDRGB_RED_CHANNEL kTPM_Chnl_2
+/* Definition of TPM0 channel/pair number 3 on Edge-aligned PWM */
+#define TPM0_LEDRGB_GREEN_CHANNEL kTPM_Chnl_3
+/* Definition of TPM0 channel/pair number 4 on Edge-aligned PWM */
+#define TPM0_LEDRGB_BLUE_CHANNEL kTPM_Chnl_4
 /* Alias for ADC0 peripheral */
 #define ADC0_PERIPHERAL ADC0
 /* ADC0 interrupt vector ID (number). */
@@ -73,6 +79,14 @@ extern "C" {
 #define ADC0_CH0_CONTROL_GROUP 0
 /* Definition of peripheral ID */
 #define RTC_PERIPHERAL RTC
+/* Definition of peripheral ID */
+#define TPM1_PERIPHERAL TPM1
+/* Definition of the clock source frequency */
+#define TPM1_CLOCK_SOURCE 4000000UL
+/* TPM1 interrupt vector ID (number). */
+#define TPM1_IRQN TPM1_IRQn
+/* TPM1 interrupt handler identifier. */
+#define TPM1_IRQHANDLER TPM1_IRQHandler
 
 /***********************************************************************************************************************
  * Global variables
@@ -92,6 +106,7 @@ extern const adc16_config_t ADC0_config;
 extern const adc16_channel_mux_mode_t ADC0_muxMode;
 /* RTC configuration */
 extern const rtc_config_t RTC_config;
+extern const tpm_config_t TPM1_config;
 
 /***********************************************************************************************************************
  * Initialization functions

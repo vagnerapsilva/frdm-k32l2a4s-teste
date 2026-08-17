@@ -325,28 +325,20 @@ static void LPI2C2_init(void) {
 instance:
 - name: 'TPM0'
 - type: 'tpm'
-- mode: 'QuadratureDecoder'
+- mode: 'EdgeAligned'
 - custom_name_enabled: 'false'
 - type_id: 'tpm_2.0.2'
 - functional_group: 'BOARD_InitPeripherals'
 - peripheral: 'TPM0'
 - config_sets:
-  - tpm_quadrature_decoder_mode:
-    - timerModuloVal: '255'
-    - tpm_quad_decoder_mode: 'kTPM_QuadPhaseEncode'
-    - tpm_phase_a_params:
-      - phaseFilterVal: '15'
-      - phasePolarity: 'kTPM_QuadPhaseNormal'
-    - tpm_phase_b_params:
-      - phaseFilterVal: '15'
-      - phasePolarity: 'kTPM_QuadPhaseNormal'
   - tpm_main_config:
     - tpm_config:
       - clockSource: 'kTPM_SystemClock'
       - tpmSrcClkFreq: 'ClocksTool_DefaultInit'
-      - prescale: 'kTPM_Prescale_Divide_128'
+      - prescale: 'kTPM_Prescale_Divide_1'
+      - timerFrequency: '1000'
       - useGlobalTimeBase: 'false'
-      - triggerSelect: 'kTPM_Trigger_Select_1'
+      - triggerSelect: 'kTPM_Trigger_Select_0'
       - triggerSource: 'kTPM_TriggerSource_Internal'
       - enableDoze: 'false'
       - enableDebugMode: 'false'
@@ -362,13 +354,39 @@ instance:
       - enable_priority: 'false'
       - priority: '2'
       - enable_custom_name: 'false'
-    - EnableTimerInInit: 'true'
+    - EnableTimerInInit: 'false'
+  - tpm_edge_aligned_mode:
+    - tpm_edge_aligned_channels_config:
+      - 0:
+        - channelId: 'LEDRGB_RED'
+        - edge_aligned_mode: 'kTPM_EdgeAlignedPwm'
+        - edge_aligned_pwm:
+          - chnlNumber: 'kTPM_Chnl_2'
+          - level: 'kTPM_LowTrue'
+          - dutyCyclePercent: '0'
+          - enable_chan_irq: 'false'
+      - 1:
+        - channelId: 'LEDRGB_GREEN'
+        - edge_aligned_mode: 'kTPM_EdgeAlignedPwm'
+        - edge_aligned_pwm:
+          - chnlNumber: 'kTPM_Chnl_3'
+          - level: 'kTPM_LowTrue'
+          - dutyCyclePercent: '0'
+          - enable_chan_irq: 'false'
+      - 2:
+        - channelId: 'LEDRGB_BLUE'
+        - edge_aligned_mode: 'kTPM_EdgeAlignedPwm'
+        - edge_aligned_pwm:
+          - chnlNumber: 'kTPM_Chnl_4'
+          - level: 'kTPM_LowTrue'
+          - dutyCyclePercent: '0'
+          - enable_chan_irq: 'false'
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 const tpm_config_t TPM0_config = {
-  .prescale = kTPM_Prescale_Divide_128,
+  .prescale = kTPM_Prescale_Divide_1,
   .useGlobalTimeBase = false,
-  .triggerSelect = kTPM_Trigger_Select_1,
+  .triggerSelect = kTPM_Trigger_Select_0,
   .triggerSource = kTPM_TriggerSource_Internal,
   .enableDoze = false,
   .enableDebugMode = false,
@@ -377,22 +395,28 @@ const tpm_config_t TPM0_config = {
   .enableStartOnTrigger = false,
   .enablePauseOnTrigger = false
 };
-const tpm_phase_params_t TPM0_phaseAParams = { 
-  .phaseFilterVal = 15UL,
-  .phasePolarity = kTPM_QuadPhaseNormal
 
-};
-const tpm_phase_params_t TPM0_phaseBParams = { 
-  .phaseFilterVal = 15UL,
-  .phasePolarity = kTPM_QuadPhaseNormal
-
+const tpm_chnl_pwm_signal_param_t TPM0_pwmSignalParams[] = { 
+  {
+    .chnlNumber = kTPM_Chnl_2,
+    .level = kTPM_LowTrue,
+    .dutyCyclePercent = 0U
+  },
+  {
+    .chnlNumber = kTPM_Chnl_3,
+    .level = kTPM_LowTrue,
+    .dutyCyclePercent = 0U
+  },
+  {
+    .chnlNumber = kTPM_Chnl_4,
+    .level = kTPM_LowTrue,
+    .dutyCyclePercent = 0U
+  }
 };
 
 static void TPM0_init(void) {
   TPM_Init(TPM0_PERIPHERAL, &TPM0_config);
-  TPM_SetTimerPeriod(TPM0_PERIPHERAL, 255);
-  TPM_SetupQuadDecode(TPM0_PERIPHERAL, &TPM0_phaseAParams, &TPM0_phaseBParams, kTPM_QuadPhaseEncode);
-  TPM_StartTimer(TPM0_PERIPHERAL, kTPM_SystemClock);
+  TPM_SetupPwm(TPM0_PERIPHERAL, TPM0_pwmSignalParams, sizeof(TPM0_pwmSignalParams) / sizeof(tpm_chnl_pwm_signal_param_t), kTPM_EdgeAlignedPwm, 1000U, TPM0_CLOCK_SOURCE);
 }
 
 /***********************************************************************************************************************
@@ -547,6 +571,108 @@ static void RTC_init(void) {
 }
 
 /***********************************************************************************************************************
+ * NVIC0 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'NVIC0'
+- type: 'nvic'
+- mode: 'general'
+- custom_name_enabled: 'false'
+- type_id: 'nvic'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'NVIC0'
+- config_sets:
+  - nvic:
+    - interrupt_table: []
+    - interrupts: []
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+
+/* Empty initialization function (commented out)
+static void NVIC0_init(void) {
+} */
+
+/***********************************************************************************************************************
+ * TPM1 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'TPM1'
+- type: 'tpm'
+- mode: 'QuadratureDecoder'
+- custom_name_enabled: 'false'
+- type_id: 'tpm_2.0.2'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'TPM1'
+- config_sets:
+  - tpm_quadrature_decoder_mode:
+    - timerModuloVal: '255'
+    - tpm_quad_decoder_mode: 'kTPM_QuadPhaseEncode'
+    - tpm_phase_a_params:
+      - phaseFilterVal: '15'
+      - phasePolarity: 'kTPM_QuadPhaseNormal'
+    - tpm_phase_b_params:
+      - phaseFilterVal: '15'
+      - phasePolarity: 'kTPM_QuadPhaseNormal'
+  - tpm_main_config:
+    - tpm_config:
+      - clockSource: 'kTPM_SystemClock'
+      - tpmSrcClkFreq: 'ClocksTool_DefaultInit'
+      - prescale: 'kTPM_Prescale_Divide_16'
+      - useGlobalTimeBase: 'false'
+      - triggerSelect: 'kTPM_Trigger_Select_1'
+      - triggerSource: 'kTPM_TriggerSource_External'
+      - enableDoze: 'false'
+      - enableDebugMode: 'false'
+      - enableReloadOnTrigger: 'false'
+      - enableStopOnOverflow: 'false'
+      - enableStartOnTrigger: 'false'
+      - enablePauseOnTrigger: 'false'
+    - timer_interrupts: ''
+    - enable_irq: 'false'
+    - tpm_interrupt:
+      - IRQn: 'TPM1_IRQn'
+      - enable_interrrupt: 'enabled'
+      - enable_priority: 'false'
+      - priority: '0'
+      - enable_custom_name: 'false'
+    - EnableTimerInInit: 'true'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const tpm_config_t TPM1_config = {
+  .prescale = kTPM_Prescale_Divide_16,
+  .useGlobalTimeBase = false,
+  .triggerSelect = kTPM_Trigger_Select_1,
+  .triggerSource = kTPM_TriggerSource_External,
+  .enableDoze = false,
+  .enableDebugMode = false,
+  .enableReloadOnTrigger = false,
+  .enableStopOnOverflow = false,
+  .enableStartOnTrigger = false,
+  .enablePauseOnTrigger = false
+};
+const tpm_phase_params_t TPM1_phaseAParams = { 
+  .phaseFilterVal = 15UL,
+  .phasePolarity = kTPM_QuadPhaseNormal
+
+};
+const tpm_phase_params_t TPM1_phaseBParams = { 
+  .phaseFilterVal = 15UL,
+  .phasePolarity = kTPM_QuadPhaseNormal
+
+};
+
+static void TPM1_init(void) {
+  TPM_Init(TPM1_PERIPHERAL, &TPM1_config);
+  TPM_SetTimerPeriod(TPM1_PERIPHERAL, 255);
+  TPM_SetupQuadDecode(TPM1_PERIPHERAL, &TPM1_phaseAParams, &TPM1_phaseBParams, kTPM_QuadPhaseEncode);
+  TPM_StartTimer(TPM1_PERIPHERAL, kTPM_SystemClock);
+}
+
+/***********************************************************************************************************************
  * USB0 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -642,6 +768,7 @@ void BOARD_InitPeripherals(void)
   TPM0_init();
   ADC0_init();
   RTC_init();
+  TPM1_init();
   USB0_init();
 }
 

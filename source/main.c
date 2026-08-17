@@ -26,8 +26,10 @@
 #include "fxos_8700cq.h"
 #include "light_sensor.h"
 #include "rtc.h"
+#include "crc.h"
 #include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
 #include "usart.h" // Driver do USART
+#include "led.h" // Driver do LED RGB
 #include "fsl_mmcau.h"
 #include "mmcau_api.h" // Driver do MMCAU
 #include <stdio.h>
@@ -69,10 +71,10 @@ MenuItem menu[NUM_ITEMS] = {
     {"Acelerometro  ", FXOS_8700CQ},
     {"Light Sensor  ", light_sensor_test},
     {"Push Buttons  ", action_placeholder},
-    {"Led RGB       ", action_placeholder},
+    {"Led RGB       ", LED_TestRgbColors},
     {"RTC           ", menu_data_hora},
     {"Cryptografia  ", teste_mmcau},
-    {"Crc           ", action_placeholder},
+    {"Crc           ", teste_crc},
     {"Rng           ", action_placeholder},
     {"Ssd1306       ", action_placeholder},
     {"Diagnostico   ", action_placeholder},
@@ -190,9 +192,7 @@ int main(void)
     encoder_counter = 0;
 
 
-
     Menu_SetSelection(0);
-
 
     /* Add user custom codes below */
     while (1)
@@ -202,7 +202,7 @@ int main(void)
         // O loop principal fica livre e apenas processa a exibição dos dados
         // if (print_flag) {
         //     print_flag = false;
-        int32_t encoder_value = (TPM0->CNT / 4); // Ajuste para a resolução do encoder
+        int32_t encoder_value = (TPM1->CNT / 4); // Ajuste para a resolução do encoder
         int32_t delta = encoder_value - last_encoder_counter;
         if (delta != 0) {
             Menu_SetSelection(current_selection + delta);

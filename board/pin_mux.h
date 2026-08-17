@@ -140,6 +140,54 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_SW_PIN_PIN_MASK (1U << 17U)              /*!<@brief PORT pin mask */
                                                                 /* @} */
 
+/*! @name PORTC4 (number 76), LEDRGB_GREEN
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_LED_GREEN_PERIPHERAL TPM0          /*!<@brief Peripheral name */
+#define BOARD_INITPINS_LED_GREEN_SIGNAL CH                /*!<@brief Signal name */
+#define BOARD_INITPINS_LED_GREEN_CHANNEL 3                /*!<@brief Signal channel */
+#define BOARD_INITPINS_LED_GREEN_PIN_NAME TPM0_CH3        /*!<@brief Routed pin name */
+#define BOARD_INITPINS_LED_GREEN_LABEL "LEDRGB_GREEN"     /*!<@brief Label */
+#define BOARD_INITPINS_LED_GREEN_NAME "LED_GREEN"         /*!<@brief Identifier */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_INITPINS_LED_GREEN_PORT PORTC               /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_LED_GREEN_PIN 4U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LED_GREEN_PIN_MASK (1U << 4U)      /*!<@brief PORT pin mask */
+                                                          /* @} */
+
+/*! @name PORTE29 (number 26), LEDRGB_RED
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_LED_RED_PERIPHERAL TPM0           /*!<@brief Peripheral name */
+#define BOARD_INITPINS_LED_RED_SIGNAL CH                 /*!<@brief Signal name */
+#define BOARD_INITPINS_LED_RED_CHANNEL 2                 /*!<@brief Signal channel */
+#define BOARD_INITPINS_LED_RED_PIN_NAME TPM0_CH2         /*!<@brief Routed pin name */
+#define BOARD_INITPINS_LED_RED_LABEL "LEDRGB_RED"        /*!<@brief Label */
+#define BOARD_INITPINS_LED_RED_NAME "LED_RED"            /*!<@brief Identifier */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_INITPINS_LED_RED_PORT PORTE                /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_LED_RED_PIN 29U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LED_RED_PIN_MASK (1U << 29U)      /*!<@brief PORT pin mask */
+                                                         /* @} */
+
+/*! @name PORTE31 (number 28), LEDRGB_BLUE
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_LED_BLUE_PERIPHERAL TPM0           /*!<@brief Peripheral name */
+#define BOARD_INITPINS_LED_BLUE_SIGNAL CH                 /*!<@brief Signal name */
+#define BOARD_INITPINS_LED_BLUE_CHANNEL 4                 /*!<@brief Signal channel */
+#define BOARD_INITPINS_LED_BLUE_PIN_NAME TPM0_CH4         /*!<@brief Routed pin name */
+#define BOARD_INITPINS_LED_BLUE_LABEL "LEDRGB_BLUE"       /*!<@brief Label */
+#define BOARD_INITPINS_LED_BLUE_NAME "LED_BLUE"           /*!<@brief Identifier */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_INITPINS_LED_BLUE_PORT PORTE                /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_LED_BLUE_PIN 31U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LED_BLUE_PIN_MASK (1U << 31U)      /*!<@brief PORT pin mask */
+                                                          /* @} */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

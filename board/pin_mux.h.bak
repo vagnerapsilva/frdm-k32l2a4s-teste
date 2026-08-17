@@ -140,40 +140,6 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_SW_PIN_PIN_MASK (1U << 17U)              /*!<@brief PORT pin mask */
                                                                 /* @} */
 
-/*! @name PORTB2 (number 55), J1[6]/D2/FXIO_D10
-  @{ */
-/* Routed pin properties */
-#define BOARD_INITPINS_DT_PIN_PERIPHERAL TPM2                   /*!<@brief Peripheral name */
-#define BOARD_INITPINS_DT_PIN_SIGNAL CH                         /*!<@brief Signal name */
-#define BOARD_INITPINS_DT_PIN_CHANNEL 0                         /*!<@brief Signal channel */
-#define BOARD_INITPINS_DT_PIN_PIN_NAME TPM2_CH0                 /*!<@brief Routed pin name */
-#define BOARD_INITPINS_DT_PIN_LABEL "J1[6]/D2/FXIO_D10"         /*!<@brief Label */
-#define BOARD_INITPINS_DT_PIN_NAME "DT_PIN"                     /*!<@brief Identifier */
-#define BOARD_INITPINS_DT_PIN_DIRECTION kPIN_MUX_DirectionInput /*!<@brief Direction */
-
-/* Symbols to be used with PORT driver */
-#define BOARD_INITPINS_DT_PIN_PORT PORTB                        /*!<@brief PORT peripheral base pointer */
-#define BOARD_INITPINS_DT_PIN_PIN 2U                            /*!<@brief PORT pin number */
-#define BOARD_INITPINS_DT_PIN_PIN_MASK (1U << 2U)               /*!<@brief PORT pin mask */
-                                                                /* @} */
-
-/*! @name PORTB3 (number 56), J4[8]/A3/ADC0_SE13/FXIO_D11
-  @{ */
-/* Routed pin properties */
-#define BOARD_INITPINS_CLK_PIN_PERIPHERAL TPM2                     /*!<@brief Peripheral name */
-#define BOARD_INITPINS_CLK_PIN_SIGNAL CH                           /*!<@brief Signal name */
-#define BOARD_INITPINS_CLK_PIN_CHANNEL 1                           /*!<@brief Signal channel */
-#define BOARD_INITPINS_CLK_PIN_PIN_NAME TPM2_CH1                   /*!<@brief Routed pin name */
-#define BOARD_INITPINS_CLK_PIN_LABEL "J4[8]/A3/ADC0_SE13/FXIO_D11" /*!<@brief Label */
-#define BOARD_INITPINS_CLK_PIN_NAME "CLK_PIN"                      /*!<@brief Identifier */
-#define BOARD_INITPINS_CLK_PIN_DIRECTION kPIN_MUX_DirectionInput   /*!<@brief Direction */
-
-/* Symbols to be used with PORT driver */
-#define BOARD_INITPINS_CLK_PIN_PORT PORTB                          /*!<@brief PORT peripheral base pointer */
-#define BOARD_INITPINS_CLK_PIN_PIN 3U                              /*!<@brief PORT pin number */
-#define BOARD_INITPINS_CLK_PIN_PIN_MASK (1U << 3U)                 /*!<@brief PORT pin mask */
-                                                                   /* @} */
-
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

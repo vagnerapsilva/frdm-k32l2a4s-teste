@@ -83,6 +83,10 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/mmcau/src/mmcau_api.c"
 "${ProjDirPath}/board/display_lib.c"
 "${ProjDirPath}/board/display_lib.h"
+"${ProjDirPath}/led/src/led.c"
+"${ProjDirPath}/led/inc/led.h"
+"${ProjDirPath}/crc/src/crc.c"
+"${ProjDirPath}/crc/inc/crc.h"
 )
 
 
@@ -100,6 +104,8 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/usart/inc"
 "${ProjDirPath}/light_sensor/inc"
 "${ProjDirPath}/rtc/inc"
+"${ProjDirPath}/led/inc"
+"${ProjDirPath}/crc/inc"
 "${ProjDirPath}/mmcau/inc"
 
 )

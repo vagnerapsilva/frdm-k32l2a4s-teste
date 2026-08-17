@@ -33,7 +33,7 @@ int32_t ENCODER_LerGiro(void)
 {
     int32_t ret = 0;
 
-    int32_t encoder_value = (TPM0->CNT / 4); // Ajuste para a resolução do encoder
+    int32_t encoder_value = (TPM1->CNT / 4); // Ajuste para a resolução do encoder
     int32_t delta = encoder_value - last_encoder_counter;
     if (delta != 0) {
         ret = current_selection + delta;

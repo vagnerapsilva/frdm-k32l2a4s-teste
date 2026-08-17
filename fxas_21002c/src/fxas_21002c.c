@@ -211,7 +211,7 @@ void teste_Giroscopio(void)
                 for (volatile int i = 0; i < 200000; i++);
                 if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0)
                 {
-                    break;
+                    __NVIC_SystemReset();
                 }
             }
         }
