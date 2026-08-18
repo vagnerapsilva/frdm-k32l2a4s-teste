@@ -27,6 +27,7 @@
 #include "light_sensor.h"
 #include "rtc.h"
 #include "crc.h"
+#include "rng.h"
 #include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
 #include "usart.h" // Driver do USART
 #include "led.h" // Driver do LED RGB
@@ -75,7 +76,7 @@ MenuItem menu[NUM_ITEMS] = {
     {"RTC           ", menu_data_hora},
     {"Cryptografia  ", teste_mmcau},
     {"Crc           ", teste_crc},
-    {"Rng           ", action_placeholder},
+    {"Rng           ", teste_rng},
     {"Ssd1306       ", action_placeholder},
     {"Diagnostico   ", action_placeholder},
     {"Economia Eng  ", action_placeholder},
@@ -177,17 +178,18 @@ int main(void)
     /* Init board hardware. */
     BOARD_InitHardware();
     BOARD_InitPeripherals();
+    
     ssd1306_Init();
-
+    
     //HW_Timer_init();
-
+    
     ssd1306_Fill(Black);
     memset(MSG, 0xFF, 50);
     sprintf(MSG, "LIB FRDM-K32L2A4S");
     ssd1306_SetCursor(1, 0);
     ssd1306_WriteString(MSG, Font_7x10, White);
     ssd1306_UpdateScreen();
-
+    
     //Init_Timer_1ms();
     encoder_counter = 0;
 

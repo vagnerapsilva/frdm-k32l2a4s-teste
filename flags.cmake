@@ -38,6 +38,8 @@ SET(CMAKE_C_FLAGS_DEBUG " \
     -include ${ProjDirPath}/source/mcux_config.h \
     -DDEBUG \
     -D__STARTUP_CLEAR_BSS \
+    -DFRDM_K32L2A4S \
+    -DFREEDOM \
     -DUSB_STACK_BM \
     -DUSB_STACK_USE_DEDICATED_RAM=1 \
     -DMCUX_META_BUILD \

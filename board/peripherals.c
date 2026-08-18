@@ -673,6 +673,159 @@ static void TPM1_init(void) {
 }
 
 /***********************************************************************************************************************
+ * CRC initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'CRC'
+- type: 'crc'
+- mode: 'General'
+- custom_name_enabled: 'false'
+- type_id: 'crc_2.0.1'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'CRC'
+- config_sets:
+  - fsl_crc:
+    - config:
+      - polynomial: '0'
+      - seed: '0'
+      - reflectIn: 'false'
+      - reflectOut: 'false'
+      - complementChecksum: 'false'
+      - crcBits: 'kCrcBits16'
+      - crcResult: 'kCrcFinalChecksum'
+    - quick_selection: 'default'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const crc_config_t CRC_config = {
+  .polynomial = 0UL,
+  .seed = 0UL,
+  .reflectIn = false,
+  .reflectOut = false,
+  .complementChecksum = false,
+  .crcBits = kCrcBits16,
+  .crcResult = kCrcFinalChecksum
+};
+
+static void CRC_init(void) {
+  CRC_Init(CRC_PERIPHERAL, &CRC_config);
+}
+
+/***********************************************************************************************************************
+ * TRNG initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'TRNG'
+- type: 'trng'
+- mode: 'General'
+- custom_name_enabled: 'false'
+- type_id: 'trng_2.0.18'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'TRNG'
+- config_sets:
+  - fsl_trng:
+    - settings_trng_config_t:
+      - clockMode: 'kTRNG_ClockModeRingOscillator'
+      - clockSource: 'BusInterfaceClock'
+      - struct_ring_oscillator:
+        - ringOscDiv: 'kTRNG_RingOscDiv0'
+        - sampleMode: 'kTRNG_SampleModeRaw'
+      - entropyDelay: '3200'
+      - sampleSize: '2500'
+      - sparseBitLimit: '63'
+      - retryCount: '1'
+      - lock: 'false'
+      - struct_statistical_checks:
+        - longRunMaxLimit: '34'
+        - monobitLimit:
+          - maximum: '1384'
+          - minimum: '1116'
+        - runBit1Limit:
+          - maximum: '405'
+          - minimum: '227'
+        - runBit2Limit:
+          - maximum: '220'
+          - minimum: '98'
+        - runBit3Limit:
+          - maximum: '125'
+          - minimum: '37'
+        - runBit4Limit:
+          - maximum: '75'
+          - minimum: '11'
+        - runBit5Limit:
+          - maximum: '47'
+          - minimum: '1'
+        - runBit6PlusLimit:
+          - maximum: '47'
+          - minimum: '1'
+        - pokerLimit:
+          - maximum: '26912'
+          - minimum: '24445'
+        - frequencyCountLimit:
+          - maximum: '25600'
+          - minimum: '1600'
+    - quick_selection: 'Default'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+const trng_config_t TRNG_config = {
+  .lock = false,
+  .clockMode = kTRNG_ClockModeRingOscillator,
+  .ringOscDiv = kTRNG_RingOscDiv0,
+
+
+  .sampleMode = kTRNG_SampleModeRaw,
+  .entropyDelay = 3200,
+  .sampleSize = 2500,
+  .sparseBitLimit = 63,
+  .retryCount = 1,
+  .longRunMaxLimit = 34U,
+  .monobitLimit = {
+    .maximum = 1384UL,
+    .minimum = 1116L
+  },
+  .runBit1Limit = {
+    .maximum = 405UL,
+    .minimum = 227L
+  },
+  .runBit2Limit = {
+    .maximum = 220UL,
+    .minimum = 98L
+  },
+  .runBit3Limit = {
+    .maximum = 125UL,
+    .minimum = 37L
+  },
+  .runBit4Limit = {
+    .maximum = 75UL,
+    .minimum = 11L
+  },
+  .runBit5Limit = {
+    .maximum = 47UL,
+    .minimum = 1L
+  },
+  .runBit6PlusLimit = {
+    .maximum = 47UL,
+    .minimum = 1L
+  },
+  .pokerLimit = {
+    .maximum = 26912UL,
+    .minimum = 24445L
+  },
+  .frequencyCountLimit = {
+    .maximum = 25600UL,
+    .minimum = 1600L
+  }
+};
+
+static void TRNG_init(void) {
+  /* Initialize TRNG. */
+  TRNG_Init(TRNG_PERIPHERAL, &TRNG_config);
+}
+
+/***********************************************************************************************************************
  * USB0 initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -769,6 +922,8 @@ void BOARD_InitPeripherals(void)
   ADC0_init();
   RTC_init();
   TPM1_init();
+  CRC_init();
+  TRNG_init();
   USB0_init();
 }
 

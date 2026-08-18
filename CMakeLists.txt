@@ -87,6 +87,8 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/led/inc/led.h"
 "${ProjDirPath}/crc/src/crc.c"
 "${ProjDirPath}/crc/inc/crc.h"
+"${ProjDirPath}/rng/src/rng.c"
+"${ProjDirPath}/rng/inc/rng.h"
 )
 
 
@@ -106,7 +108,9 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/rtc/inc"
 "${ProjDirPath}/led/inc"
 "${ProjDirPath}/crc/inc"
+"${ProjDirPath}/rng/inc"
 "${ProjDirPath}/mmcau/inc"
+
 
 )
 

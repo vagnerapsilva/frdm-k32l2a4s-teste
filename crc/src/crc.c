@@ -17,6 +17,7 @@
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
 #include "fsl_crc.h"
+#include "encoder_ky_040.h" // Driver do encoder rotativo KY-040
 
   /*******************************************************************************
    * Definitions
@@ -235,7 +236,18 @@ void teste_crc(void)
 
     display_render("Test Crc");
 
-    while (1)
-    {
+
+    //Aguarda um curto intervalo antes da próxima amostragem
+    SDK_DelayAtLeastUs(200000, SDK_DEVICE_MAXIMUM_CPU_CLOCK_FREQUENCY);
+
+    // Verifica o clique do botão físico de forma não-bloqueante
+    if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0) {
+        // Debounce simples via software para o botão físico
+        for (volatile int i = 0; i < 200000; i++);
+
+        // Confirma se o botão continua pressionado pós-debounce
+        if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0)
+            __NVIC_SystemReset(); // Reinicia o microcontrolador    
+        //break; // Sai do loop de teste do giroscópio
     }
 }

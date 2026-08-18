@@ -23,6 +23,8 @@
 #include "fsl_tpm.h"
 #include "fsl_adc16.h"
 #include "fsl_rtc.h"
+#include "fsl_crc.h"
+#include "fsl_trng.h"
 #include "usb_device_composite.h"
 
 #if defined(__cplusplus)
@@ -87,6 +89,10 @@ extern "C" {
 #define TPM1_IRQN TPM1_IRQn
 /* TPM1 interrupt handler identifier. */
 #define TPM1_IRQHANDLER TPM1_IRQHandler
+/* CRC base */
+#define CRC_PERIPHERAL CRC0
+/* Definition of peripheral ID */
+#define TRNG_PERIPHERAL TRNG
 
 /***********************************************************************************************************************
  * Global variables
@@ -107,6 +113,8 @@ extern const adc16_channel_mux_mode_t ADC0_muxMode;
 /* RTC configuration */
 extern const rtc_config_t RTC_config;
 extern const tpm_config_t TPM1_config;
+extern const crc_config_t CRC_config;
+extern const trng_config_t TRNG_config;
 
 /***********************************************************************************************************************
  * Initialization functions
