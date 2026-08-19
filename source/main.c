@@ -33,8 +33,12 @@
 #include "led.h" // Driver do LED RGB
 #include "fsl_mmcau.h"
 #include "mmcau_api.h" // Driver do MMCAU
+
+
 #include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
+
  /*******************************************************************************
   * Definitions
   ******************************************************************************/
@@ -79,7 +83,7 @@ MenuItem menu[NUM_ITEMS] = {
     {"Rng           ", teste_rng},
     {"Ssd1306       ", action_placeholder},
     {"Diagnostico   ", action_placeholder},
-    {"Economia Eng  ", action_placeholder},
+    {"Encoder ky40  ", teste_encoder},
     {"Contraste     ", action_placeholder},
     {"Sair          ", action_placeholder}
 };
@@ -89,29 +93,30 @@ int16_t current_selection = 0;
 int16_t scroll_offset = 0;
 volatile int32_t last_encoder_counter = 0;
 
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
 
-// static void HW_Timer_init(void)
-// {
-//     /* Configure the SysTick timer */
-//     SysTick_Config(SystemCoreClock / HWTIMER_PERIOD);
-// }
+ static void HW_Timer_init(void)
+ {
+     /* Configure the SysTick timer */
+     SysTick_Config(SystemCoreClock / HWTIMER_PERIOD);
+ }
 
-// void SysTick_Handler(void)
-// {
-//     SampleEventFlag = 1;
-// }
-
-
+ void SysTick_Handler(void)
+ {
+     SampleEventFlag = 1;
+ }
 
 
-//----------------------------------------------------------------------------------------------------------------------
 
-/**
- * @brief Atualiza e renderiza o menu no display SSD1306
- */
+
+ //----------------------------------------------------------------------------------------------------------------------
+
+ /**
+  * @brief Atualiza e renderiza o menu no display SSD1306
+  */
 void Menu_Display_Update(void) {
     ssd1306_Fill(Black);
 
@@ -169,48 +174,48 @@ void Menu_SetSelection(int16_t new_selection) {
 }
 
 
-
 /*!
  * @brief Main function
  */
 int main(void)
 {
+    int32_t result;
     /* Init board hardware. */
     BOARD_InitHardware();
     BOARD_InitPeripherals();
-    
+
     ssd1306_Init();
-    
-    //HW_Timer_init();
-    
+
+  
+
     ssd1306_Fill(Black);
     memset(MSG, 0xFF, 50);
     sprintf(MSG, "LIB FRDM-K32L2A4S");
     ssd1306_SetCursor(1, 0);
     ssd1306_WriteString(MSG, Font_7x10, White);
     ssd1306_UpdateScreen();
-    
+
     //Init_Timer_1ms();
     encoder_counter = 0;
 
+   // port_led_init();
 
+    
+    //HW_Timer_init();
     Menu_SetSelection(0);
 
     /* Add user custom codes below */
     while (1)
     {
-        USB_DeviceTasks();
+       USB_DeviceTasks();
 
-        // O loop principal fica livre e apenas processa a exibição dos dados
-        // if (print_flag) {
-        //     print_flag = false;
-        int32_t encoder_value = (TPM1->CNT / 4); // Ajuste para a resolução do encoder
-        int32_t delta = encoder_value - last_encoder_counter;
+        int32_t ev = (TPM1->CNT / 4); // Ajuste para a resolução do encoder
+        int32_t delta = ev - last_encoder_counter;
         if (delta != 0) {
             Menu_SetSelection(current_selection + delta);
-            last_encoder_counter = encoder_value;
+            last_encoder_counter = ev;
         }
-        //}
+
 
         // Verifica o clique do botão físico de forma não-bloqueante
         if (GPIO_PinRead(ENCODER_GPIO, SW_PIN) == 0) {
@@ -232,3 +237,91 @@ int main(void)
 
     }
 }
+
+
+static void port_led_init(void)
+{
+    /* LED Init */
+    LED_RED_INIT(1);
+    LED_GREEN_INIT(1);
+    LED_BLUE_INIT(1);
+}
+
+// static void aslider_callback(const struct nt_control* control, enum nt_control_aslider_event event, uint32_t position)
+// {
+//     switch (event)
+//     {
+//     case NT_ASLIDER_INITIAL_TOUCH:
+//         //nt_printf("\n Touch: %d", position);
+//         if (position < 20)
+//         {
+//             LED_RED_ON();
+//             LED_GREEN_OFF();
+//             LED_BLUE_OFF();
+//         }
+//         else if ((position >= 20) && (position < 40))
+//         {
+//             LED_RED_ON();
+//             LED_GREEN_ON();
+//             LED_BLUE_OFF();
+//         }
+//         else if ((position >= 40) && (position < 60))
+//         {
+//             LED_RED_OFF();
+//             LED_GREEN_ON();
+//             LED_BLUE_OFF();
+//         }
+//         else if ((position >= 60) && (position < 80))
+//         {
+//             LED_RED_OFF();
+//             LED_GREEN_ON();
+//             LED_BLUE_ON();
+//         }
+//         else if (position >= 80)
+//         {
+//             LED_RED_OFF();
+//             LED_GREEN_OFF();
+//             LED_BLUE_ON();
+//         }
+//         break;
+//     case NT_ASLIDER_MOVEMENT:
+//         //nt_printf("\n Movement: %d", position);
+//         if (position < 20)
+//         {
+//             LED_RED_TOGGLE();
+//             LED_GREEN_OFF();
+//             LED_BLUE_OFF();
+//         }
+//         else if ((position >= 20) && (position < 40))
+//         {
+//             LED_RED_TOGGLE();
+//             LED_GREEN_TOGGLE();
+//             LED_BLUE_OFF();
+//         }
+//         else if ((position >= 40) && (position < 60))
+//         {
+//             LED_RED_OFF();
+//             LED_GREEN_TOGGLE();
+//             LED_BLUE_OFF();
+//         }
+//         else if ((position >= 60) && (position < 80))
+//         {
+//             LED_RED_OFF();
+//             LED_GREEN_TOGGLE();
+//             LED_BLUE_TOGGLE();
+//         }
+//         else if (position >= 80)
+//         {
+//             LED_RED_OFF();
+//             LED_GREEN_OFF();
+//             LED_BLUE_TOGGLE();
+//         }
+//         break;
+//     case NT_ASLIDER_ALL_RELEASE:
+//         //nt_printf("\n Release: %d", position);
+//         LED_RED_OFF();
+//         LED_GREEN_OFF();
+//         LED_BLUE_OFF();
+//         break;
+//     }
+// }

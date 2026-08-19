@@ -236,24 +236,24 @@ static void mmcau_example_task(void);
  * Code
  ******************************************************************************/
 
- /*!
-  * @brief counter since last POR/reset.
-  */
-void SysTick_Handler(void)
-{
-    g_msCount++;
-#if defined(DEMO_MMCAU_PASS_RATE)
-    if (g_irq_random)
-    {
-        uint32_t randomDelay;
-        GetRandomData32(&randomDelay);
-        randomDelay = randomDelay % 1000;
+//  /*!
+//   * @brief counter since last POR/reset.
+//   */
+// void SysTick_Handler(void)
+// {
+//     g_msCount++;
+// #if defined(DEMO_MMCAU_PASS_RATE)
+//     if (g_irq_random)
+//     {
+//         uint32_t randomDelay;
+//         GetRandomData32(&randomDelay);
+//         randomDelay = randomDelay % 1000;
 
-        /* call CMSIS SysTick function. It enables the SysTick interrupt at low priority */
-        SysTick_Config(CORE_CLK_FREQ / randomDelay); /* 0-1 ms period */
-    }
-#endif /* DEMO_MMCAU_PASS_RATE */
-}
+//         /* call CMSIS SysTick function. It enables the SysTick interrupt at low priority */
+//         SysTick_Config(CORE_CLK_FREQ / randomDelay); /* 0-1 ms period */
+//     }
+// #endif /* DEMO_MMCAU_PASS_RATE */
+// }
 
 /*!
  * @brief SysTick period configuration and interrupt enable.
@@ -721,7 +721,6 @@ static void mmcau_example_task(void)
     uint8_t status;
     float timeBefore;
     float timeAfter;
-    int cycles;
 
     /* Initialize display */
     display_init();

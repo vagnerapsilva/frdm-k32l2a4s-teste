@@ -667,7 +667,7 @@ const tpm_phase_params_t TPM1_phaseBParams = {
 
 static void TPM1_init(void) {
   TPM_Init(TPM1_PERIPHERAL, &TPM1_config);
-  TPM_SetTimerPeriod(TPM1_PERIPHERAL, 255);
+  TPM_SetTimerPeriod(TPM1_PERIPHERAL, 0xFFFFU);
   TPM_SetupQuadDecode(TPM1_PERIPHERAL, &TPM1_phaseAParams, &TPM1_phaseBParams, kTPM_QuadPhaseEncode);
   TPM_StartTimer(TPM1_PERIPHERAL, kTPM_SystemClock);
 }

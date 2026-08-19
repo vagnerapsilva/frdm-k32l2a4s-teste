@@ -89,6 +89,7 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/crc/inc/crc.h"
 "${ProjDirPath}/rng/src/rng.c"
 "${ProjDirPath}/rng/inc/rng.h"
+
 )
 
 

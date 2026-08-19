@@ -11,10 +11,10 @@
 
 #include <stdint.h>
 
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
-/* SSD1306 Display Configuration */
+ /*******************************************************************************
+  * Definitions
+  ******************************************************************************/
+  /* SSD1306 Display Configuration */
 #define DISPLAY_LINE_LENGTH   18      /* Characters per line (128px / 7px per char) */
 #define DISPLAY_VISIBLE_LINES 5       /* Visible lines on display */
 #define DISPLAY_BUFFER_LINES  64      /* Total buffer lines for scrolling */
@@ -25,9 +25,9 @@
  * Public Functions
  ******************************************************************************/
 
-/*!
- * @brief Initialize display buffer and SSD1306 screen
- */
+ /*!
+  * @brief Initialize display buffer and SSD1306 screen
+  */
 void display_init(void);
 
 /*!
@@ -60,7 +60,7 @@ void display_add_speed(const char* label, float speed);
 /*!
  * @brief Render display buffer to SSD1306 screen
  */
-void display_render(uint8_t* label);
+void display_render(const char* label);
 
 /*!
  * @brief Print data bytes to display with formatting

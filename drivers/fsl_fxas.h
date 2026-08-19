@@ -133,7 +133,9 @@
 
 #define DATA_RATE_OFFSET (2)
 
+#ifndef ACTIVE
 #define ACTIVE       (FXAS_ACTIVE_MASK)
+#endif
 #define FXAS_STANDBY 0x00
 
 /* FXAS_CTRL_REG2 System Control 2 Register */

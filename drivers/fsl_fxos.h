@@ -364,7 +364,9 @@
 #define HYB_DATA_RATE_3_15HZ (DATA_RATE_160MS)
 #define HYB_DATA_RATE_0_8HZ  (DATA_RATE_640MS)
 
+#ifndef ACTIVE
 #define ACTIVE  (ACTIVE_MASK)
+#endif
 #define STANDBY 0x00
 
 /* CTRL_REG2 System Control 2 Register */

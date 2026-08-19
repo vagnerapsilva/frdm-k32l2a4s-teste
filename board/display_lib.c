@@ -159,7 +159,7 @@ void display_add_speed(const char* label, float speed)
 /*!
  * @brief Render display buffer to SSD1306 screen
  */
-void display_render(uint8_t* label)
+void display_render(const char* label)
 {
     const uint8_t y_positions[] = { 13, 23, 33, 43, 53 };
     uint16_t visible_start = g_displayBuffer.scroll_start;

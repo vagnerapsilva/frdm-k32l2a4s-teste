@@ -41,15 +41,15 @@ static void LED_SetColor(uint8_t redPercent, uint8_t greenPercent, uint8_t blueP
     TPM_UpdatePwmDutycycle(TPM0_PERIPHERAL, TPM0_LEDRGB_GREEN_CHANNEL, kTPM_EdgeAlignedPwm, greenPercent);
     TPM_UpdatePwmDutycycle(TPM0_PERIPHERAL, TPM0_LEDRGB_BLUE_CHANNEL, kTPM_EdgeAlignedPwm, bluePercent);
 
-    sprintf(MSG, "Red: %0.3d", redPercent);
+    sprintf(MSG, "Red: %03d", redPercent);
     ssd1306_SetCursor(30, 25);
     ssd1306_WriteString(MSG, Font_7x10, White);
 
-    sprintf(MSG, "Green: %0.3d", greenPercent);
+    sprintf(MSG, "Green: %03d", greenPercent);
     ssd1306_SetCursor(30, 35);
     ssd1306_WriteString(MSG, Font_7x10, White);
 
-    sprintf(MSG, "Blue: %0.3d", bluePercent);
+    sprintf(MSG, "Blue: %03d", bluePercent);
     ssd1306_SetCursor(30, 45);
     ssd1306_WriteString(MSG, Font_7x10, White);
     ssd1306_UpdateScreen();

@@ -29,8 +29,7 @@ typedef enum {
 extern volatile int32_t encoder_counter;
 extern volatile uint32_t last_clk_state;
 extern volatile bool print_flag;
-extern void Init_Encoder_Pins(void);
-extern void Init_Timer_1ms(void);
-extern void TPM0_Quadrature_Init(void);
+extern void teste_encoder(void);
+
 
 #endif /* __ENCODER_KY_040_H */

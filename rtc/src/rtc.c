@@ -235,7 +235,6 @@ void menu_data_hora(void)
     bool sair_menu = false;
     int32_t giro_encoder = 0;
     int32_t clique_encoder = 0;
-    char buffer[32];
 
     while (!sair_menu) {
         // Leitura do encoder
