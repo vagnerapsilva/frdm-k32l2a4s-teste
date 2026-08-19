@@ -609,7 +609,7 @@ instance:
 - peripheral: 'TPM1'
 - config_sets:
   - tpm_quadrature_decoder_mode:
-    - timerModuloVal: '255'
+    - timerModuloVal: '65535'
     - tpm_quad_decoder_mode: 'kTPM_QuadPhaseEncode'
     - tpm_phase_a_params:
       - phaseFilterVal: '15'
@@ -667,7 +667,7 @@ const tpm_phase_params_t TPM1_phaseBParams = {
 
 static void TPM1_init(void) {
   TPM_Init(TPM1_PERIPHERAL, &TPM1_config);
-  TPM_SetTimerPeriod(TPM1_PERIPHERAL, 0xFFFFU);
+  TPM_SetTimerPeriod(TPM1_PERIPHERAL, 65535);
   TPM_SetupQuadDecode(TPM1_PERIPHERAL, &TPM1_phaseAParams, &TPM1_phaseBParams, kTPM_QuadPhaseEncode);
   TPM_StartTimer(TPM1_PERIPHERAL, kTPM_SystemClock);
 }

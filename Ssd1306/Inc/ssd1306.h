@@ -85,10 +85,11 @@ extern void ssd1306_FillCircle(uint8_t par_x, uint8_t par_y, uint8_t par_r, SSD1
 extern void ssd1306_Polyline(const SSD1306_VERTEX* par_vertex, uint16_t par_size, SSD1306_COLOR color);
 extern void ssd1306_DrawRectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, SSD1306_COLOR color);
 extern void ssd1306_FillRectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, SSD1306_COLOR color);
-// void ssd1306_DrawBitmap(uint8_t x, uint8_t y, const unsigned char* bitmap, uint8_t w, uint8_t h, SSD1306_COLOR color);
-extern void ssd1306_DrawBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const unsigned char* bitmap);
+extern void ssd1306_DrawBitmap(uint8_t x, uint8_t y, const uint8_t* pBMP, uint8_t w, uint8_t h, SSD1306_COLOR color);
+extern void ssd1306_DrawBitmap_inv(uint8_t x, uint8_t y, const unsigned char* bitmap, uint8_t w, uint8_t h, SSD1306_COLOR color);
 extern void ssd1306_BarGrafic(uint8_t X, uint8_t Y, uint8_t w);
 extern void ssd1306_print_sn(uint8_t ID, uint8_t tipo, uint8_t* SN);
+extern SSD1306_Error_t ssd1306_InvertRectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 /**
  * @brief Sets the contrast of the display.
  * @param[in] value contrast to set.

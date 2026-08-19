@@ -156,6 +156,22 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_LED_GREEN_PIN_MASK (1U << 4U)      /*!<@brief PORT pin mask */
                                                           /* @} */
 
+/*! @name PORTE31 (number 28), LEDRGB_BLUE
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_LED_BLUE_PERIPHERAL TPM0           /*!<@brief Peripheral name */
+#define BOARD_INITPINS_LED_BLUE_SIGNAL CH                 /*!<@brief Signal name */
+#define BOARD_INITPINS_LED_BLUE_CHANNEL 4                 /*!<@brief Signal channel */
+#define BOARD_INITPINS_LED_BLUE_PIN_NAME TPM0_CH4         /*!<@brief Routed pin name */
+#define BOARD_INITPINS_LED_BLUE_LABEL "LEDRGB_BLUE"       /*!<@brief Label */
+#define BOARD_INITPINS_LED_BLUE_NAME "LED_BLUE"           /*!<@brief Identifier */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_INITPINS_LED_BLUE_PORT PORTE                /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_LED_BLUE_PIN 31U                   /*!<@brief PORT pin number */
+#define BOARD_INITPINS_LED_BLUE_PIN_MASK (1U << 31U)      /*!<@brief PORT pin mask */
+                                                          /* @} */
+
 /*! @name PORTE29 (number 26), LEDRGB_RED
   @{ */
 /* Routed pin properties */
@@ -172,21 +188,37 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_LED_RED_PIN_MASK (1U << 29U)      /*!<@brief PORT pin mask */
                                                          /* @} */
 
-/*! @name PORTE31 (number 28), LEDRGB_BLUE
+/*! @name PORTA1 (number 35), TSI_ELECTRODE1/TSI0_CH2
   @{ */
 /* Routed pin properties */
-#define BOARD_INITPINS_LED_BLUE_PERIPHERAL TPM0           /*!<@brief Peripheral name */
-#define BOARD_INITPINS_LED_BLUE_SIGNAL CH                 /*!<@brief Signal name */
-#define BOARD_INITPINS_LED_BLUE_CHANNEL 4                 /*!<@brief Signal channel */
-#define BOARD_INITPINS_LED_BLUE_PIN_NAME TPM0_CH4         /*!<@brief Routed pin name */
-#define BOARD_INITPINS_LED_BLUE_LABEL "LEDRGB_BLUE"       /*!<@brief Label */
-#define BOARD_INITPINS_LED_BLUE_NAME "LED_BLUE"           /*!<@brief Identifier */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_PERIPHERAL TSI0                 /*!<@brief Peripheral name */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_SIGNAL CH                       /*!<@brief Signal name */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_CHANNEL 2                       /*!<@brief Signal channel */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_PIN_NAME TSI0_CH2               /*!<@brief Routed pin name */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_LABEL "TSI_ELECTRODE1/TSI0_CH2" /*!<@brief Label */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_NAME "TSI_ELECTRODE_1"          /*!<@brief Identifier */
 
 /* Symbols to be used with PORT driver */
-#define BOARD_INITPINS_LED_BLUE_PORT PORTE                /*!<@brief PORT peripheral base pointer */
-#define BOARD_INITPINS_LED_BLUE_PIN 31U                   /*!<@brief PORT pin number */
-#define BOARD_INITPINS_LED_BLUE_PIN_MASK (1U << 31U)      /*!<@brief PORT pin mask */
-                                                          /* @} */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_PORT PORTA                      /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_PIN 1U                          /*!<@brief PORT pin number */
+#define BOARD_INITPINS_TSI_ELECTRODE_1_PIN_MASK (1U << 1U)             /*!<@brief PORT pin mask */
+                                                                       /* @} */
+
+/*! @name PORTA2 (number 36), TSI_ELECTRODE2/TSI0_CH3
+  @{ */
+/* Routed pin properties */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_PERIPHERAL TSI0                 /*!<@brief Peripheral name */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_SIGNAL CH                       /*!<@brief Signal name */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_CHANNEL 3                       /*!<@brief Signal channel */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_PIN_NAME TSI0_CH3               /*!<@brief Routed pin name */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_LABEL "TSI_ELECTRODE2/TSI0_CH3" /*!<@brief Label */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_NAME "TSI_ELECTRODE_2"          /*!<@brief Identifier */
+
+/* Symbols to be used with PORT driver */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_PORT PORTA                      /*!<@brief PORT peripheral base pointer */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_PIN 2U                          /*!<@brief PORT pin number */
+#define BOARD_INITPINS_TSI_ELECTRODE_2_PIN_MASK (1U << 2U)             /*!<@brief PORT pin mask */
+                                                                       /* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.

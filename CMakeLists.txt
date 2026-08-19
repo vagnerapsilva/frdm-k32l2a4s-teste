@@ -60,6 +60,8 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/Ssd1306/Src/ssd1306_fonts.c"
 "${ProjDirPath}/Ssd1306/Inc/ssd1306_fonts.h"
 "${ProjDirPath}/Ssd1306/Inc/ssd1306_conf.h"
+"${ProjDirPath}/Ssd1306/Src/ssd1306_tests.c"
+"${ProjDirPath}/Ssd1306/Inc/ssd1306_tests.h"
 "${ProjDirPath}/source/generated/usb_device_config.h"
 "${ProjDirPath}/source/generated/usb_device_composite.c"
 "${ProjDirPath}/source/generated/usb_device_composite.h"
@@ -89,7 +91,8 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/crc/inc/crc.h"
 "${ProjDirPath}/rng/src/rng.c"
 "${ProjDirPath}/rng/inc/rng.h"
-
+"${ProjDirPath}/tsi_v4_normal/src/tsi_v4_normal.c"
+"${ProjDirPath}/tsi_v4_normal/inc/tsi_v4_normal.h"
 )
 
 
@@ -110,6 +113,7 @@ target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
 "${ProjDirPath}/led/inc"
 "${ProjDirPath}/crc/inc"
 "${ProjDirPath}/rng/inc"
+"${ProjDirPath}/tsi_v4_normal/inc"  
 "${ProjDirPath}/mmcau/inc"
 
 

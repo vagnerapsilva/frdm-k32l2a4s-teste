@@ -365,7 +365,110 @@ void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, SSD1306_COLOR 
   }
   return;
 }
+/* Convert Degrees to Radians */
+static float ssd1306_DegToRad(float par_deg) {
+  return par_deg * (3.14f / 180.0f);
+}
+/* Normalize degree to [0;360] */
+static uint16_t ssd1306_NormalizeTo0_360(uint16_t par_deg) {
+  uint16_t loc_angle;
+  if (par_deg <= 360) {
+    loc_angle = par_deg;
+  }
+  else {
+    loc_angle = par_deg % 360;
+    loc_angle = (loc_angle ? loc_angle : 360);
+  }
+  return loc_angle;
+}
+/*
+ * DrawArc. Draw angle is beginning from 4 quart of trigonometric circle (3pi/2)
+ * start_angle in degree
+ * sweep in degree
+ */
+void ssd1306_DrawArc(uint8_t x, uint8_t y, uint8_t radius, uint16_t start_angle, uint16_t sweep, SSD1306_COLOR color) {
+  static const uint8_t CIRCLE_APPROXIMATION_SEGMENTS = 36;
+  float approx_degree;
+  uint32_t approx_segments;
+  uint8_t xp1, xp2;
+  uint8_t yp1, yp2;
+  uint32_t count;
+  uint32_t loc_sweep;
+  float rad;
 
+  loc_sweep = ssd1306_NormalizeTo0_360(sweep);
+
+  count = (ssd1306_NormalizeTo0_360(start_angle) * CIRCLE_APPROXIMATION_SEGMENTS) / 360;
+  approx_segments = (loc_sweep * CIRCLE_APPROXIMATION_SEGMENTS) / 360;
+  approx_degree = loc_sweep / (float)approx_segments;
+  while (count < approx_segments)
+  {
+    rad = ssd1306_DegToRad(count * approx_degree);
+    xp1 = x + (int8_t)(sinf(rad) * radius);
+    yp1 = y + (int8_t)(cosf(rad) * radius);
+    count++;
+    if (count != approx_segments) {
+      rad = ssd1306_DegToRad(count * approx_degree);
+    }
+    else {
+      rad = ssd1306_DegToRad(loc_sweep);
+    }
+    xp2 = x + (int8_t)(sinf(rad) * radius);
+    yp2 = y + (int8_t)(cosf(rad) * radius);
+    ssd1306_Line(xp1, yp1, xp2, yp2, color);
+  }
+
+  return;
+}
+
+/*
+ * Draw arc with radius line
+ * Angle is beginning from 4 quart of trigonometric circle (3pi/2)
+ * start_angle: start angle in degree
+ * sweep: finish angle in degree
+ */
+void ssd1306_DrawArcWithRadiusLine(uint8_t x, uint8_t y, uint8_t radius, uint16_t start_angle, uint16_t sweep, SSD1306_COLOR color) {
+  const uint32_t CIRCLE_APPROXIMATION_SEGMENTS = 36;
+  float approx_degree;
+  uint32_t approx_segments;
+  uint8_t xp1;
+  uint8_t xp2 = 0;
+  uint8_t yp1;
+  uint8_t yp2 = 0;
+  uint32_t count;
+  uint32_t loc_sweep;
+  float rad;
+
+  loc_sweep = ssd1306_NormalizeTo0_360(sweep);
+
+  count = (ssd1306_NormalizeTo0_360(start_angle) * CIRCLE_APPROXIMATION_SEGMENTS) / 360;
+  approx_segments = (loc_sweep * CIRCLE_APPROXIMATION_SEGMENTS) / 360;
+  approx_degree = loc_sweep / (float)approx_segments;
+
+  rad = ssd1306_DegToRad(count * approx_degree);
+  uint8_t first_point_x = x + (int8_t)(sinf(rad) * radius);
+  uint8_t first_point_y = y + (int8_t)(cosf(rad) * radius);
+  while (count < approx_segments) {
+    rad = ssd1306_DegToRad(count * approx_degree);
+    xp1 = x + (int8_t)(sinf(rad) * radius);
+    yp1 = y + (int8_t)(cosf(rad) * radius);
+    count++;
+    if (count != approx_segments) {
+      rad = ssd1306_DegToRad(count * approx_degree);
+    }
+    else {
+      rad = ssd1306_DegToRad(loc_sweep);
+    }
+    xp2 = x + (int8_t)(sinf(rad) * radius);
+    yp2 = y + (int8_t)(cosf(rad) * radius);
+    ssd1306_Line(xp1, yp1, xp2, yp2, color);
+  }
+
+  // Radius line
+  ssd1306_Line(x, y, first_point_x, first_point_y, color);
+  ssd1306_Line(x, y, xp2, yp2, color);
+  return;
+}
 /* Draw polyline */
 void ssd1306_Polyline(const SSD1306_VERTEX* par_vertex, uint16_t par_size, SSD1306_COLOR color)
 {
@@ -621,6 +724,36 @@ void ssd1306_Clear(void)
   memset(SSD1306_Buffer, 0, SSD1306_BUFFER_SIZE);
 }
 
+SSD1306_Error_t ssd1306_InvertRectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2) {
+  if ((x2 >= SSD1306_WIDTH) || (y2 >= SSD1306_HEIGHT)) {
+    return SSD1306_ERR;
+  }
+  if ((x1 > x2) || (y1 > y2)) {
+    return SSD1306_ERR;
+  }
+  uint32_t i;
+  if ((y1 / 8) != (y2 / 8)) {
+    /* if rectangle doesn't lie on one 8px row */
+    for (uint32_t x = x1; x <= x2; x++) {
+      i = x + (y1 / 8) * SSD1306_WIDTH;
+      SSD1306_Buffer[i] ^= 0xFF << (y1 % 8);
+      i += SSD1306_WIDTH;
+      for (; i < x + (y2 / 8) * SSD1306_WIDTH; i += SSD1306_WIDTH) {
+        SSD1306_Buffer[i] ^= 0xFF;
+      }
+      SSD1306_Buffer[i] ^= 0xFF >> (7 - (y2 % 8));
+    }
+  }
+  else {
+    /* if rectangle lies on one 8px row */
+    const uint8_t mask = (0xFF << (y1 % 8)) & (0xFF >> (7 - (y2 % 8)));
+    for (i = x1 + (y1 / 8) * SSD1306_WIDTH;
+      i <= (uint32_t)x2 + (y2 / 8) * SSD1306_WIDTH; i++) {
+      SSD1306_Buffer[i] ^= mask;
+    }
+  }
+  return SSD1306_OK;
+}
 /* Draw a bitmap */
 // void ssd1306_DrawBitmap(uint8_t x, uint8_t y, uint8_t w, uint8_t h,const unsigned char* bitmap){//, SSD1306_COLOR color) {
 //     int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
@@ -653,13 +786,13 @@ void ssd1306_Clear(void)
 //  note: each '1' bit in the bitmap will be drawn as a pixel
 //        each '0' bit in the will not be drawn (transparent bitmap)
 //  bitmap: one byte per 8 vertical pixels, LSB top, truncate bottom bits
-void ssd1306_DrawBitmap(uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_t* pBMP)
+void ssd1306_DrawBitmap(uint8_t X, uint8_t Y, const uint8_t* pBMP, uint8_t W, uint8_t H, SSD1306_COLOR color)
 {
   uint8_t pX;
   uint8_t pY;
   uint8_t tmpCh;
   uint8_t bL;
-  SSD1306_COLOR color = White;
+  // SSD1306_COLOR color = White;
   pY = Y;
   while (pY < Y + H)
   {
@@ -694,7 +827,31 @@ void ssd1306_DrawBitmap(uint8_t X, uint8_t Y, uint8_t W, uint8_t H, const uint8_
     pY += 8;
   }
 }
+/* Draw a bitmap */
+void ssd1306_DrawBitmap_inv(uint8_t x, uint8_t y, const unsigned char* bitmap, uint8_t w, uint8_t h, SSD1306_COLOR color) {
+  int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
+  uint8_t byte = 0;
 
+  if (x >= SSD1306_WIDTH || y >= SSD1306_HEIGHT) {
+    return;
+  }
+
+  for (uint8_t j = 0; j < h; j++, y++) {
+    for (uint8_t i = 0; i < w; i++) {
+      if (i & 7) {
+        byte <<= 1;
+      }
+      else {
+        byte = (*(const unsigned char*)(&bitmap[j * byteWidth + i / 8]));
+      }
+
+      if (byte & 0x80) {
+        ssd1306_DrawPixel(x + i, y, color);
+      }
+    }
+  }
+  return;
+}
 void ssd1306_SetContrast(const uint8_t value)
 {
   const uint8_t kSetContrastControlRegister = 0x81;

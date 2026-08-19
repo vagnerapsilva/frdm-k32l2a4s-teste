@@ -20,6 +20,7 @@
 #include "peripherals.h"
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
+#include "ssd1306_tests.h"
 #include "fsl_fxas.h" // Driver do sensor FXAS21002
 #include "fsl_lpi2c.h"  // Driver do I2C do K32L2
 #include "fxas_21002c.h"
@@ -33,7 +34,7 @@
 #include "led.h" // Driver do LED RGB
 #include "fsl_mmcau.h"
 #include "mmcau_api.h" // Driver do MMCAU
-
+#include "tsi_v4_normal.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -81,8 +82,8 @@ MenuItem menu[NUM_ITEMS] = {
     {"Cryptografia  ", teste_mmcau},
     {"Crc           ", teste_crc},
     {"Rng           ", teste_rng},
-    {"Ssd1306       ", action_placeholder},
-    {"Diagnostico   ", action_placeholder},
+    {"Ssd1306       ", ssd1306_TestAll},
+    {"Touch Sensor  ", teste_tsi_v4_normal},
     {"Encoder ky40  ", teste_encoder},
     {"Contraste     ", action_placeholder},
     {"Sair          ", action_placeholder}
@@ -104,10 +105,10 @@ volatile int32_t last_encoder_counter = 0;
      SysTick_Config(SystemCoreClock / HWTIMER_PERIOD);
  }
 
- void SysTick_Handler(void)
- {
-     SampleEventFlag = 1;
- }
+//  void SysTick_Handler(void)
+//  {
+//      SampleEventFlag = 1;
+//  }
 
 
 
@@ -179,14 +180,12 @@ void Menu_SetSelection(int16_t new_selection) {
  */
 int main(void)
 {
-    int32_t result;
+    //int32_t result;
     /* Init board hardware. */
     BOARD_InitHardware();
     BOARD_InitPeripherals();
 
     ssd1306_Init();
-
-  
 
     ssd1306_Fill(Black);
     memset(MSG, 0xFF, 50);
@@ -201,7 +200,7 @@ int main(void)
    // port_led_init();
 
     
-    //HW_Timer_init();
+    HW_Timer_init();
     Menu_SetSelection(0);
 
     /* Add user custom codes below */

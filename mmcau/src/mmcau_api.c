@@ -224,7 +224,7 @@ static uint8_t g_testMd5Expected[] = { 0x9e, 0x10, 0x7d, 0x9d, 0x37, 0x2b, 0xb6,
 static uint8_t g_output[OUTPUT_ARRAY_LEN];
 static uint8_t g_result[OUTPUT_ARRAY_LEN];
 
-static volatile uint32_t g_msCount = 0;
+ volatile uint32_t g_msCount = 0;
 static volatile bool g_irq_random = false;
 
 /*******************************************************************************
@@ -236,24 +236,24 @@ static void mmcau_example_task(void);
  * Code
  ******************************************************************************/
 
-//  /*!
-//   * @brief counter since last POR/reset.
-//   */
-// void SysTick_Handler(void)
-// {
-//     g_msCount++;
-// #if defined(DEMO_MMCAU_PASS_RATE)
-//     if (g_irq_random)
-//     {
-//         uint32_t randomDelay;
-//         GetRandomData32(&randomDelay);
-//         randomDelay = randomDelay % 1000;
+ /*!
+  * @brief counter since last POR/reset.
+  */
+void SysTick_Handler(void)
+{
+    g_msCount++;
+#if defined(DEMO_MMCAU_PASS_RATE)
+    if (g_irq_random)
+    {
+        uint32_t randomDelay;
+        GetRandomData32(&randomDelay);
+        randomDelay = randomDelay % 1000;
 
-//         /* call CMSIS SysTick function. It enables the SysTick interrupt at low priority */
-//         SysTick_Config(CORE_CLK_FREQ / randomDelay); /* 0-1 ms period */
-//     }
-// #endif /* DEMO_MMCAU_PASS_RATE */
-// }
+        /* call CMSIS SysTick function. It enables the SysTick interrupt at low priority */
+        SysTick_Config(CORE_CLK_FREQ / randomDelay); /* 0-1 ms period */
+    }
+#endif /* DEMO_MMCAU_PASS_RATE */
+}
 
 /*!
  * @brief SysTick period configuration and interrupt enable.
